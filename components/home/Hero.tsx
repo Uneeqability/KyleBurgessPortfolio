@@ -134,7 +134,6 @@ export default function Hero() {
     const tl = gsap.timeline();
     tl.set(words, { opacity: 0, y: 26, filter: "blur(10px)" })
       .set(portrait, portraitFrom)
-      .set(sharp, { filter: "blur(12px)" })
       .to(
         words,
         {
@@ -152,8 +151,12 @@ export default function Hero() {
         portrait,
         { ...portraitTo, duration: 1.1, ease: "power3.out" },
         0.25,
-      )
-      .to(
+      );
+
+    // The "come into focus" de-blur is desktop-only — the mobile portrait stays
+    // crisp (no blur at all).
+    if (isDesktop) {
+      tl.set(sharp, { filter: "blur(12px)" }, 0).to(
         sharp,
         {
           filter: "blur(0px)",
@@ -163,6 +166,7 @@ export default function Hero() {
         },
         0.25,
       );
+    }
 
     return () => {
       tl.kill();
@@ -230,34 +234,45 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* ---------- Mobile: the Figma mobile frame (517×389) ---------- */}
+      {/* ---------- Mobile: exact replica of the Figma mobile frame (517×389) ---------- */}
       <div className="relative block aspect-[517/389] w-full overflow-hidden sm:hidden">
         <Backdrop />
 
-        {/* Portrait — framed head-to-chest so the face clears the wordmark. */}
-        <Portrait className="left-[17.8%] top-[17%] h-[95%] w-[47.97%] object-cover object-[50%_18%]" />
-
-        {/* Wordmark — in FRONT of the portrait on mobile (per the Figma frame,
-            "Burgess" reads over his chest), unlike the desktop layering. */}
-        <div className="absolute inset-0 z-30 text-cream">
+        {/* Wordmark — BEHIND the portrait (the cutout body sits in front of it,
+            exactly per the Figma layering). Positions are the Figma px coords
+            converted to % of the 517×389 frame. */}
+        <div className="absolute inset-0 text-cream">
           <span
             data-hero-word
-            className="absolute left-[6.77%] top-[29.05%] font-serif text-[11.6vw] font-light italic leading-[0.92] tracking-[-0.044em] opacity-0"
+            className="absolute left-[13%] top-[29.05%] font-serif text-[11.78vw] font-light italic leading-[0.92] tracking-[-0.044em] opacity-0"
           >
             <Sheen>Kyle</Sheen>
           </span>
           <span
             data-hero-word
-            className="absolute left-[44%] top-[52%] font-serif text-[11.6vw] font-normal leading-[0.92] tracking-[-0.044em] opacity-0"
+            className="absolute left-[47.2%] top-[43.19%] font-serif text-[11.78vw] font-normal leading-[0.92] tracking-[-0.044em] opacity-0"
           >
             <Sheen>Burgess</Sheen>
           </span>
           <span
             data-hero-word
-            className="absolute left-[70.5%] top-[66.5%] font-mono text-[2.71vw] font-light text-cream/85 opacity-0"
+            className="absolute left-[73.95%] top-[61%] font-mono text-[2.36vw] font-light text-cream/85 opacity-0"
           >
             portfolio
           </span>
+        </div>
+
+        {/* Portrait — the oversized TRANSPARENT cutout clipped by the Figma photo
+            box, sitting in FRONT of the wordmark. The image offsets/size are the
+            exact Figma fill transform; the box carries the Figma's soft blur. */}
+        <div className="absolute left-[17.82%] top-[22.88%] h-[89.2%] w-[47.93%] overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            data-hero-portrait="sharp"
+            src="/images/hero-kyle.png"
+            alt="Kyle Burgess"
+            className="pointer-events-none absolute left-[-109.34%] top-[-12.31%] h-[112.34%] w-[264.13%] max-w-none opacity-0"
+          />
         </div>
       </div>
     </section>
