@@ -1,26 +1,158 @@
 @import "tailwindcss";
 
+/*
+  Design tokens for the Kyle Burgess portfolio.
+  Extracted from the Figma "New Portfolio" file so all 9 pages share one system.
+  Colors, type scale, and key spacing live here as theme tokens — never hardcode.
+*/
+@theme {
+  /* Fonts (wired to next/font variables set on <html>) */
+  --font-sans: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-ibm-serif), ui-serif, Georgia, serif;
+  --font-mono: var(--font-ibm-mono), ui-monospace, "IBM Plex Mono", monospace;
+
+  /* Brand palette — warm espresso + sand (sampled from Figma) */
+  --color-espresso: #3b230e; /* primary text: all headings, pills */
+  --color-taupe: #72675b; /* body copy */
+  --color-cream: #fbf4e6; /* hero/footer light text, gradient start */
+  --color-cream-deep: #ddd3c2; /* creative gradient end */
+  --color-sand: #efe2d1; /* "My Full Range" card */
+  --color-apricot: #ffffeb; /* page background + light text on dark */
+  --color-sage: #a5a894; /* creative outer panel + "trusted by" */
+  --color-forest: #2e3720; /* hero deep green */
+  --color-forest-deep: #20281a;
+  --color-clay: #c2ab92; /* footer warm taupe */
+  --color-mocha: #5b4a3b;
+  --color-ink: #1a1a1a;
+
+  /* Type scale (fluid) — sizes match Figma px at desktop */
+  --text-hero: clamp(3.5rem, 11vw, 11.3rem); /* 181px wordmark */
+  --text-hero--line-height: 0.92;
+  --text-section: clamp(2.75rem, 5.8vw, 4.65rem); /* 74px — Creative direction */
+  --text-section--line-height: 1.02;
+  --text-display: clamp(2.5rem, 5.2vw, 4rem); /* 64px — My Full Range, Recent Projects */
+  --text-display--line-height: 1.05;
+  --text-h2: clamp(2.25rem, 4.6vw, 3.75rem); /* 60px — intro headline */
+  --text-h2--line-height: 1.2;
+  --text-h3: clamp(1.5rem, 2.6vw, 2.25rem); /* feature titles */
+  --text-h3--line-height: 1.15;
+  --text-lead: clamp(1.125rem, 1.8vw, 1.8rem); /* 29px — creative subtitle */
+  --text-lead--line-height: 1.45;
+  --text-body: clamp(1rem, 1.3vw, 1.5rem); /* 24px — intro body */
+  --text-body--line-height: 1.5;
+  --text-label: 0.875rem; /* 14px — pills */
+  --text-label--line-height: 1.15;
+
+  /* Layout */
+  --spacing-gutter: 1.5rem;
+  --container-content: 1320px;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #fbf4e6; /* page background (cream) */
+  --foreground: var(--color-ink);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-mono);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Infinite logo marquee — two identical strips translating left in unison */
+@keyframes marquee-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.animate-marquee {
+  animation: marquee-left 40s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
+}
+
+@property --glow {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+/* Hero wordmark sheen — a soft highlight that tracks the cursor while hovering
+   the name, clipped to the glyphs. --sx/--sy follow the pointer; --glow fades
+   the highlight in on enter and out on leave. The solid currentColor layer
+   keeps the text cream the rest of the time. The clip box must contain the
+   glyph (incl. descenders), so the span carries a roomy line-height. */
+.hero-shimmer {
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  background-repeat: no-repeat;
+  background-image:
+    radial-gradient(
+      circle 0.75em at var(--sx, 50%) var(--sy, 50%),
+      rgba(206, 162, 74, var(--glow, 0)) 0%,
+      rgba(206, 162, 74, 0) 66%
+    ),
+    linear-gradient(currentColor, currentColor);
+  transition: --glow 0.45s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-shimmer {
+    transition: none;
+  }
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal-in {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal-in {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Lenis smooth scroll */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* Shared content container */
+.container-content {
+  width: 100%;
+  max-width: var(--container-content);
+  margin-inline: auto;
+  padding-inline: var(--spacing-gutter);
 }
