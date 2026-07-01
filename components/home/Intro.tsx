@@ -62,8 +62,10 @@ export default function Intro() {
           <Heading className="text-center text-[3.125vw] font-normal leading-[1.2]" />
         </div>
 
+        {/* Bottom-anchored so the last line always sits 19.73% from the frame
+            bottom — matching the headshot's 19.73% top padding (symmetric). */}
         <Reveal
-          className="absolute left-[20.83%] top-[63.88%] flex h-[18.45%] w-[57.03%] items-center"
+          className="absolute left-[20.83%] top-[63.88%] flex h-[16.39%] w-[57.03%] items-end"
           delay={220}
         >
           <p className="w-full text-center font-[family-name:var(--font-roboto-mono)] text-[1.25vw] font-normal leading-[1.45] text-taupe">

@@ -17,7 +17,7 @@ export default function Home() {
         <RecentProjects />
         <FullRange />
       </main>
-      <Footer />
+      <Footer intro />
     </>
   );
 }

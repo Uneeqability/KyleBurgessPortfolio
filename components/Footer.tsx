@@ -1,31 +1,40 @@
 import Image from "next/image";
 import { BlurTextEffect } from "@/components/ui/blur-text-effect";
 import AnimatedCurve from "@/components/AnimatedCurve";
+import FooterIntroReveal from "@/components/FooterIntroReveal";
 
 /**
  * Shared site footer / "Let's Connect" CTA, from the Figma frame (1920 wide):
  *
  *   Top    gradient 106.65deg #A08971→#917E6A→#7F6E5C, radius 60/60/0/0 — holds
- *          only the closing paragraph (no divider, no name).
+ *          only the closing paragraph. Home-only (pass `intro`); it rises up from
+ *          behind the portrait panel on scroll (see FooterIntroReveal).
  *   Bottom blurred portrait (1920×945), radius 60, overlapping the top panel.
  *          "Let's Connect" (120px) with the dashed trail drawing off its right
  *          edge, the email + LinkedIn buttons, then "Kyle Burgess" beneath them.
+ *
+ * `intro` gates the closing paragraph + its scroll animation, so the other pages
+ * (which drop that section) ship none of it — just render `<Footer />`.
  */
-export default function Footer() {
+export default function Footer({ intro = false }: { intro?: boolean }) {
   return (
     <footer className="relative w-full text-[#EFE2D1]">
-      {/* ---------- Top gradient panel (paragraph only) ---------- */}
-      <div className="rounded-t-[40px] bg-[linear-gradient(106.65deg,#A08971_30.75%,#917E6A_59.92%,#7F6E5C_94.73%)] px-6 pb-[clamp(7rem,17vw,327px)] pt-[clamp(3rem,6.6vw,127px)] text-center sm:rounded-t-[60px]">
-        <p className="mx-auto w-[48.3%] min-w-[280px] max-w-[927px] font-serif text-[clamp(1rem,1.25vw,24px)] font-normal leading-[1.5]">
-          Thanks for scrolling this far. I built this site from scratch, which is
-          more or less how I&rsquo;m built, concept to something real. If
-          that&rsquo;s who you&rsquo;re looking for, drop me a line and let&rsquo;s
-          get to work.
-        </p>
-      </div>
+      {/* ---------- Top gradient panel (paragraph only, home-only) ---------- */}
+      {intro && (
+        <FooterIntroReveal>
+          <p className="mx-auto w-[48.3%] min-w-[280px] max-w-[927px] font-serif text-[clamp(1rem,1.25vw,24px)] font-normal leading-[1.5] will-change-transform">
+            Thanks for scrolling this far. I built this site from scratch, which
+            is more or less how I&rsquo;m built, concept to something real. If
+            that&rsquo;s who you&rsquo;re looking for, drop me a line and
+            let&rsquo;s get to work.
+          </p>
+        </FooterIntroReveal>
+      )}
 
-      {/* ---------- Bottom portrait panel (overlaps the gradient) ---------- */}
-      <div className="relative -mt-[clamp(5rem,12vw,231px)] isolate overflow-hidden rounded-t-[40px] sm:rounded-t-[60px]">
+      {/* ---------- Bottom portrait panel (overlaps the gradient when present) ---------- */}
+      <div
+        className={`relative z-10 isolate overflow-hidden rounded-t-[40px] sm:rounded-t-[60px] ${intro ? "-mt-[clamp(5rem,12vw,231px)]" : ""}`}
+      >
         <Image
           src="/images/footer-bg.jpg"
           alt="Kyle Burgess"

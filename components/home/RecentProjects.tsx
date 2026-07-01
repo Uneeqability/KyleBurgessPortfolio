@@ -51,11 +51,11 @@ const PROJECTS: Project[] = [
 
 function Banner({ title }: { title: string }) {
   const Unit = () => (
-    <span className="flex shrink-0 items-center whitespace-nowrap font-mono [font-size:clamp(10px,1.61vw,31px)] text-white">
+    <span className="flex shrink-0 items-center whitespace-nowrap font-mono [font-size:clamp(11px,1.77vw,34px)] text-white">
       {Array.from({ length: 5 }).map((_, i) => (
         <span key={i} className="flex items-center">
           <span>{title}</span>
-          <span className="px-[1.65vw]">·</span>
+          <span className="px-[1.82vw]">·</span>
         </span>
       ))}
     </span>
@@ -75,7 +75,7 @@ function Card({ project }: { project: Project }) {
     <Link
       href={project.href}
       aria-label={project.title}
-      className="group relative block aspect-[1511/912] w-full overflow-hidden rounded-[1.76vw] shadow-[0_30px_60px_-20px_rgba(62,38,18,0.25)]"
+      className="group relative block aspect-[1511/912] w-full overflow-hidden rounded-[1.94vw] shadow-[0_30px_60px_-20px_rgba(62,38,18,0.25)]"
       style={{ background: project.bg }}
     >
       <img
@@ -94,21 +94,21 @@ export default function RecentProjects() {
     <section className="w-full pb-24 sm:pb-32">
       <div className="w-full rounded-[5.2vw] bg-[#F7ECD9] py-[7vw]">
         <div className="mx-auto max-w-[1352px] px-6">
-          <h2 className="text-center font-serif text-[clamp(2rem,3.125vw,60px)] leading-tight text-[#3E2612]">
+          <h2 className="text-center font-serif text-[clamp(1.6rem,2.5vw,48px)] leading-tight text-[#3E2612]">
             <BlurTextEffect>Recent Projects</BlurTextEffect>
           </h2>
 
           {/* Sticky-stacking cards. Each card gets a trailing slug of scroll
               room (the last one too) so it can fully cover the card below. */}
-          <div className="relative mx-auto mt-[clamp(2rem,4vw,4.5rem)] w-full sm:w-3/4">
+          <div className="relative mx-auto mt-[clamp(2rem,4vw,4.5rem)] w-full sm:w-[82.5%]">
             {PROJECTS.map((project) => (
-              <div key={project.title} className="sticky top-[6vh] pb-[clamp(1.5rem,3.75vw,4.1rem)]">
+              <div key={project.title} className="sticky top-[6vh] pb-[clamp(1.65rem,4.13vw,4.5rem)]">
                 <Card project={project} />
               </div>
             ))}
           </div>
 
-          <Reveal className="mt-[clamp(2.5rem,5vw,5.5rem)] text-center">
+          <Reveal className="mt-[7vw] text-center">
             <Link
               href="/work"
               className="font-mono text-[clamp(1.1rem,1.3vw,25px)] font-light text-[#3E2612] underline-offset-8 transition hover:underline"
