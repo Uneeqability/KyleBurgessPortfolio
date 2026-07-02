@@ -17,7 +17,7 @@ export default function Home() {
         <RecentProjects />
         <FullRange />
       </main>
-      <Footer intro />
+      <Footer intro="Thanks for scrolling this far. I built this site from scratch, which is more or less how I’m built, concept to something real. If that’s who you’re looking for, drop me a line and let’s get to work." />
     </>
   );
 }

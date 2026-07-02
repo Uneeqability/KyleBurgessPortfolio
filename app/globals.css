@@ -10,6 +10,7 @@
   --font-sans: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-ibm-serif), ui-serif, Georgia, serif;
   --font-mono: var(--font-ibm-mono), ui-monospace, "IBM Plex Mono", monospace;
+  --font-roboto: var(--font-roboto-mono), ui-monospace, "Roboto Mono", monospace;
 
   /* Brand palette — warm espresso + sand (sampled from Figma) */
   --color-espresso: #3b230e; /* primary text: all headings, pills */
@@ -130,6 +131,29 @@ body {
     transition: none;
   }
 }
+
+/* Soft blur-in reveal (cards) — starts blurred + faded, sharpens on entry */
+.reveal-blur {
+  opacity: 0;
+  filter: blur(16px);
+  transition:
+    opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, filter;
+}
+.reveal-blur.reveal-blur-in {
+  opacity: 1;
+  filter: blur(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal-blur,
+  .reveal-blur.reveal-blur-in {
+    opacity: 1;
+    filter: none;
+    transition: none;
+  }
+}
+
 
 /* Lenis smooth scroll */
 html.lenis,

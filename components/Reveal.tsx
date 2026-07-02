@@ -12,10 +12,13 @@ export default function Reveal({
   children,
   className = "",
   delay = 0,
+  blur = false,
 }: {
   children: React.ReactNode;
   className?: string;
   delay?: number;
+  /** soft blur-in instead of the default fade + rise */
+  blur?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [shown, setShown] = useState(false);
@@ -40,10 +43,12 @@ export default function Reveal({
     return () => obs.disconnect();
   }, []);
 
+  const base = blur ? "reveal-blur" : "reveal";
+  const inCls = blur ? "reveal-blur-in" : "reveal-in";
   return (
     <div
       ref={ref}
-      className={`reveal${shown ? " reveal-in" : ""} ${className}`}
+      className={`${base}${shown ? ` ${inCls}` : ""} ${className}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
       {children}

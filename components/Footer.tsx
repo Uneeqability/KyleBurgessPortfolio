@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { BlurTextEffect } from "@/components/ui/blur-text-effect";
 import AnimatedCurve from "@/components/AnimatedCurve";
 import FooterIntroReveal from "@/components/FooterIntroReveal";
@@ -13,21 +14,36 @@ import FooterIntroReveal from "@/components/FooterIntroReveal";
  *          "Let's Connect" (120px) with the dashed trail drawing off its right
  *          edge, the email + LinkedIn buttons, then "Kyle Burgess" beneath them.
  *
- * `intro` gates the closing paragraph + its scroll animation, so the other pages
- * (which drop that section) ship none of it — just render `<Footer />`.
+ * `intro` is the closing sign-off note (a "bookend" that rises up from behind
+ * the portrait on scroll). Pass the page's own copy; omit it for a plain footer
+ * with no note — just render `<Footer />`.
  */
-export default function Footer({ intro = false }: { intro?: boolean }) {
+export default function Footer({
+  intro,
+  moreProjects = false,
+}: {
+  intro?: React.ReactNode;
+  /** show a "see more projects" pill under the sign-off note (case-study pages) */
+  moreProjects?: boolean;
+}) {
   return (
     <footer className="relative w-full text-[#EFE2D1]">
-      {/* ---------- Top gradient panel (paragraph only, home-only) ---------- */}
+      {/* ---------- Top gradient panel (sign-off note + optional CTA) ---------- */}
       {intro && (
         <FooterIntroReveal>
           <p className="mx-auto w-[48.3%] min-w-[280px] max-w-[927px] font-serif text-[clamp(1rem,1.25vw,24px)] font-normal leading-[1.5] will-change-transform">
-            Thanks for scrolling this far. I built this site from scratch, which
-            is more or less how I&rsquo;m built, concept to something real. If
-            that&rsquo;s who you&rsquo;re looking for, drop me a line and
-            let&rsquo;s get to work.
+            {intro}
           </p>
+          {moreProjects && (
+            <div className="mt-[clamp(1.75rem,2.8vw,54px)]">
+              <Link
+                href="/work"
+                className="inline-block whitespace-nowrap rounded-full border border-cream/40 px-6 py-2.5 font-sans text-[clamp(0.85rem,0.95vw,1rem)] text-cream/85 transition-colors hover:border-[#FFE2A8] hover:bg-[#FFE2A8] hover:text-[#1B200F]"
+              >
+                see more projects
+              </Link>
+            </div>
+          )}
         </FooterIntroReveal>
       )}
 

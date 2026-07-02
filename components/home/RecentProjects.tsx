@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Reveal from "@/components/Reveal";
+import SeeMoreProjects from "@/components/SeeMoreProjects";
 import { BlurTextEffect } from "@/components/ui/blur-text-effect";
 
 /**
@@ -34,7 +34,7 @@ const PROJECTS: Project[] = [
   {
     title: "Microsoft AI Website",
     img: "/images/card-mai.png",
-    href: "/work",
+    href: "/work/microsoft-ai-website",
     bg: "#F7ECD9",
     imgClass: "absolute left-[6.2%] top-[3.16%] w-[87.7%]",
     overlay: "bg-black/30",
@@ -108,14 +108,7 @@ export default function RecentProjects() {
             ))}
           </div>
 
-          <Reveal className="mt-[7vw] text-center">
-            <Link
-              href="/work"
-              className="font-mono text-[clamp(1.1rem,1.3vw,25px)] font-light text-[#3E2612] underline-offset-8 transition hover:underline"
-            >
-              see more projects
-            </Link>
-          </Reveal>
+          <SeeMoreProjects className="mt-[7vw]" />
         </div>
       </div>
     </section>
