@@ -42,3 +42,6 @@ next-env.d.ts
 
 # claude code local config
 .claude/
+
+# Large source screenshots (kept on disk, resized into ui-*.png)
+/public/images/twain/UI Screens/

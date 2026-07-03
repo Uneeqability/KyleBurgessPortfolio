@@ -28,14 +28,16 @@ export default function Footer({
 }) {
   return (
     <footer className="relative w-full text-[#EFE2D1]">
-      {/* ---------- Top gradient panel (sign-off note + optional CTA) ---------- */}
-      {intro && (
+      {/* ---------- Top gradient panel (optional sign-off note and/or CTA) ---------- */}
+      {(intro || moreProjects) && (
         <FooterIntroReveal>
-          <p className="mx-auto w-[48.3%] min-w-[280px] max-w-[927px] font-serif text-[clamp(1rem,1.25vw,24px)] font-normal leading-[1.5] will-change-transform">
-            {intro}
-          </p>
+          {intro && (
+            <p className="mx-auto w-[48.3%] min-w-[280px] max-w-[927px] font-serif text-[clamp(1rem,1.25vw,24px)] font-normal leading-[1.5] will-change-transform">
+              {intro}
+            </p>
+          )}
           {moreProjects && (
-            <div className="mt-[clamp(1.75rem,2.8vw,54px)]">
+            <div className={intro ? "mt-[clamp(1.75rem,2.8vw,54px)]" : ""}>
               <Link
                 href="/work"
                 className="inline-block whitespace-nowrap rounded-full border border-cream/40 px-6 py-2.5 font-sans text-[clamp(0.85rem,0.95vw,1rem)] text-cream/85 transition-colors hover:border-[#FFE2A8] hover:bg-[#FFE2A8] hover:text-[#1B200F]"
@@ -49,7 +51,7 @@ export default function Footer({
 
       {/* ---------- Bottom portrait panel (overlaps the gradient when present) ---------- */}
       <div
-        className={`relative z-10 isolate overflow-hidden rounded-t-[40px] sm:rounded-t-[60px] ${intro ? "-mt-[clamp(5rem,12vw,231px)]" : ""}`}
+        className={`relative z-10 isolate overflow-hidden rounded-t-[40px] sm:rounded-t-[60px] ${intro || moreProjects ? "-mt-[clamp(5rem,12vw,231px)]" : ""}`}
       >
         <Image
           src="/images/footer-bg.jpg"

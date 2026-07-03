@@ -154,6 +154,18 @@ body {
   }
 }
 
+/* Animatable custom props for the challenge card's circle/arrow "draw" masks */
+@property --draw-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+@property --draw-pct {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 0%;
+}
+
 
 /* Lenis smooth scroll */
 html.lenis,
