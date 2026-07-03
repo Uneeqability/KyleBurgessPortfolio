@@ -36,7 +36,7 @@ const dBody =
 
 function BodyDesktop() {
   return (
-    <section className="hidden w-full pb-[18vw] sm:block">
+    <section className="hidden w-full pb-[8vw] sm:block">
       <div className="relative mx-auto mt-[7.55vw] h-[278.4vw] w-[73.9vw]">
         {/* The role */}
         <div className="absolute left-1/2 top-0 w-[50vw] -translate-x-1/2 text-center">

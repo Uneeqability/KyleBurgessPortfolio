@@ -12,7 +12,7 @@ const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 
 export default function SiteShowcase() {
-  const rootRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLAnchorElement>(null);
   const curveRef = useRef<SVGPathElement>(null);
   const headRef = useRef<SVGPathElement>(null);
 
@@ -50,7 +50,14 @@ export default function SiteShowcase() {
   }, []);
 
   return (
-    <div ref={rootRef} className="relative aspect-[1372/718] w-full">
+    <a
+      ref={rootRef}
+      href="https://microsoft.ai"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="See the live MAI-Transcribe-1.5 page on microsoft.ai"
+      className="group relative block aspect-[1372/718] w-full"
+    >
       <img
         src="/images/mai/site.png"
         alt="The live MAI-Transcribe-1.5 page on microsoft.ai"
@@ -58,15 +65,12 @@ export default function SiteShowcase() {
       />
 
       {/* Caption — centred in the empty-left area (between the card edge and the
-          browser, which starts at ~26%). */}
-      <a
-        href="https://microsoft.ai"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="absolute left-[2.5%] top-[31%] w-[21%] text-center font-roboto text-[2vw] leading-snug text-[#353536] underline-offset-4 hover:underline sm:left-[4%] sm:top-[37%] sm:w-[18.1%] sm:text-[min(1.02vw,20px)] sm:leading-[1.09]"
+          browser, which starts at ~26%). Visual only; the whole card is the link. */}
+      <span
+        className="absolute left-[2.5%] top-[31%] w-[21%] text-center font-roboto text-[2vw] leading-snug text-[#353536] underline-offset-4 group-hover:underline sm:left-[4%] sm:top-[37%] sm:w-[18.1%] sm:text-[min(1.02vw,20px)] sm:leading-[1.09]"
       >
         See the site. Click here!
-      </a>
+      </span>
       <svg
         viewBox="0 0 160 200"
         className="absolute left-[9%] top-[10%] w-[12%] sm:left-[11%] sm:top-[13%] sm:w-[13%]"
@@ -88,6 +92,6 @@ export default function SiteShowcase() {
           strokeLinecap="round"
         />
       </svg>
-    </div>
+    </a>
   );
 }
