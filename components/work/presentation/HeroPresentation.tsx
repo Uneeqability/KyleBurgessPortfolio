@@ -35,7 +35,7 @@ function HeroMobile() {
       <div className="relative mx-auto mt-6 w-[82vw]">
         <div className="absolute inset-x-[-6%] bottom-[-8%] top-[38%] rounded-[3vw] bg-[#E1DBC6]" />
         <div className="relative">
-          <CardShuffle />
+          <CardShuffle intro />
         </div>
       </div>
     </section>
@@ -44,12 +44,12 @@ function HeroMobile() {
 
 function HeroDesktop() {
   return (
-    <section className="relative hidden h-[58.16vw] w-full overflow-hidden sm:block">
+    <section className="relative hidden h-[60.4vw] w-full overflow-hidden sm:block">
       {/* #F7ECD9 hero plate */}
-      <div className="absolute inset-x-0 top-0 h-[45.55vw] bg-[#F7ECD9]" />
+      <div className="absolute inset-x-0 top-0 h-[47.6vw] bg-[#F7ECD9]" />
 
       {/* Title + subtitle */}
-      <div className="absolute inset-x-0 top-[9.4vw] px-6 text-center">
+      <div className="absolute inset-x-0 top-[8.4vw] px-6 text-center">
         <Reveal>
           <h1 className="font-serif text-[min(3.125vw,60px)] font-normal leading-[1.2] text-espresso">
             Presentation &amp; Narrative Design
@@ -65,11 +65,11 @@ function HeroDesktop() {
       </div>
 
       {/* Beige plate (Figma "Hero image" 70:1186) */}
-      <div className="absolute left-[12.71vw] top-[33.78vw] h-[24.38vw] w-[74.53vw] rounded-[1.47vw] bg-[#E1DBC6]" />
+      <div className="absolute left-[12.71vw] top-[35.6vw] h-[24.38vw] w-[74.53vw] rounded-[1.47vw] bg-[#E1DBC6]" />
 
       {/* Shuffling slide stack (Figma 70:1195, 756.78×600), peeking up on the plate */}
-      <div className="absolute left-1/2 top-[23.94vw] w-[39.42vw] -translate-x-1/2">
-        <CardShuffle />
+      <div className="absolute left-1/2 top-[26.1vw] w-[39.42vw] -translate-x-1/2">
+        <CardShuffle intro />
       </div>
     </section>
   );

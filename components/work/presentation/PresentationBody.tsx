@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import Reveal from "@/components/Reveal";
+import DeckCard from "./DeckCard";
 
 /**
  * Presentation & Narrative Design body (Figma 60:834). A column of deck blocks:
@@ -34,9 +34,11 @@ const LAYOUT_FLIP: Slot[] = [
   { file: "big.jpg", left: "12.75%", top: "28.15%", w: "35.25%", h: "37.89%", r: "0.88vw" },
   { file: "4.jpg", left: "62.46%", top: "26.52%", w: "24.58%", h: "26.41%", r: "0.5vw" },
 ];
+// Fox card ("The Scout"). 5.jpg sits at the upper-right; the old 2.jpg slot sat
+// directly under it (same spot) and only ever peeked through during the staggered
+// reveal, so it's removed — the settled layout is unchanged.
 const LAYOUT_FOX: Slot[] = [
   { file: "1.jpg", left: "62.54%", top: "55.62%", w: "24.68%", h: "26.52%", r: "0.5vw" },
-  { file: "2.jpg", left: "62.56%", top: "25.51%", w: "24.57%", h: "26.4%", r: "0.5vw" },
   { file: "3.jpg", left: "44.26%", top: "48.85%", w: "24.17%", h: "25.98%", r: "0.49vw" },
   { file: "4.jpg", left: "44.19%", top: "19.22%", w: "24.36%", h: "26.18%", r: "0.5vw" },
   { file: "big.jpg", left: "12.82%", top: "29.9%", w: "35.25%", h: "37.89%", r: "0.86vw" },
@@ -49,31 +51,6 @@ const LAYOUT_STUDIO: Slot[] = [
   { file: "big.jpg", left: "12.82%", top: "29.9%", w: "35.25%", h: "37.89%", r: "1vw" },
   { file: "4.jpg", left: "63.95%", top: "25.44%", w: "24.63%", h: "26.47%", r: "0.62vw" },
 ];
-
-/** The media card — individual slide images, each its own animatable layer. */
-function DeckMedia({ slug, layout }: { slug: string; layout: Slot[] }) {
-  return (
-    <Reveal
-      blur
-      className="relative aspect-[1412/739] w-full overflow-hidden rounded-[0.86vw] bg-[#EFE2D1]"
-    >
-      {layout.map((s, i) => (
-        <div
-          key={i}
-          data-deck-slide={i}
-          className="absolute overflow-hidden shadow-[0.24vw_0.24vw_0.5vw_rgba(0,0,0,0.22)]"
-          style={{ left: s.left, top: s.top, width: s.w, height: s.h, borderRadius: s.r }}
-        >
-          <img
-            src={`${P}/${slug}/${s.file}`}
-            alt=""
-            className="absolute inset-0 size-full object-cover"
-          />
-        </div>
-      ))}
-    </Reveal>
-  );
-}
 
 const label =
   "font-sans text-[min(1.04vw,20px)] font-bold uppercase tracking-[0.02em] text-[#3b230e]";
@@ -158,7 +135,7 @@ function BodyDesktop() {
       <div className="mx-auto flex w-[73.54vw] flex-col gap-[4.5vw] pt-[6vw]">
         {PROJECTS.map((p) => (
           <div key={p.slug} className="w-full">
-            <DeckMedia slug={p.slug} layout={p.layout} />
+            <DeckCard slug={p.slug} layout={p.layout} />
             <Row logo={p.logo} logoClass={p.logoClass} client={p.client} project={p.project} result={p.result} />
           </div>
         ))}
@@ -172,17 +149,7 @@ function BodyMobile() {
     <section className="flex flex-col gap-10 px-5 py-12 sm:hidden">
       {PROJECTS.map((p) => (
         <div key={p.slug}>
-          <div className="relative aspect-[1412/739] w-full overflow-hidden rounded-2xl bg-[#EFE2D1]">
-            {p.layout.map((s, i) => (
-              <div
-                key={i}
-                className="absolute overflow-hidden rounded-[1.5vw] shadow-[1vw_1vw_2vw_rgba(0,0,0,0.2)]"
-                style={{ left: s.left, top: s.top, width: s.w, height: s.h }}
-              >
-                <img src={`${P}/${p.slug}/${s.file}`} alt="" className="absolute inset-0 size-full object-cover" />
-              </div>
-            ))}
-          </div>
+          <DeckCard slug={p.slug} layout={p.layout} mobile />
           <div className="mt-3 rounded-2xl bg-[#F7ECD9] px-4 pb-4">
             {p.logo && (
               <div className="flex justify-center py-4">

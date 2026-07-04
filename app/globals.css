@@ -154,6 +154,53 @@ body {
   }
 }
 
+/* Presentation deck slides — desktop "depth pop": each slide steps forward out
+   of the card (scale + 3D tilt), staggered by z-order. Parallax lives on the
+   wrapper, so this transform is reveal-only and never fights the pointer drift. */
+.deck-slide {
+  opacity: 0;
+  transform: scale(0.9) rotateX(11deg) rotateY(-8deg);
+  /* longhand (not the `transition` shorthand) so the inline per-slide
+     --deck-delay stagger can drive transition-delay without a shorthand clash */
+  transition-property: opacity, transform;
+  transition-duration: 0.72s;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1), cubic-bezier(0.33, 1.12, 0.4, 1);
+  transition-delay: var(--deck-delay, 0ms);
+  transform-origin: center;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+}
+.deck-slide.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Mobile — plain fade + rise (no 3D, no parallax). */
+.deck-slide-m {
+  opacity: 0;
+  transform: translateY(14px);
+  transition-property: opacity, transform;
+  transition-duration: 0.55s;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--deck-delay, 0ms);
+  will-change: transform, opacity;
+}
+.deck-slide-m.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deck-slide,
+  .deck-slide.is-in,
+  .deck-slide-m,
+  .deck-slide-m.is-in {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
 /* Animatable custom props for the challenge card's circle/arrow "draw" masks */
 @property --draw-angle {
   syntax: "<angle>";
