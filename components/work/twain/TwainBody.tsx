@@ -152,7 +152,7 @@ function BodyDesktop() {
         <Reveal blur className="relative h-[35.52vw] w-[72.24vw] overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/twain/golden-billboard.png"
+            src="/images/twain/golden-billboard.jpg"
             alt="twain highway billboard at golden hour — 'from 60 seconds to something real'"
             className="absolute left-[-5.94%] top-[-3.91%] h-[107.18%] w-[107.15%] max-w-none object-cover"
           />
@@ -287,7 +287,7 @@ function BodyMobile() {
       <Reveal blur className="relative aspect-[1387/682] w-full overflow-hidden rounded-[3vw]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/images/twain/golden-billboard.png"
+          src="/images/twain/golden-billboard.jpg"
           alt="twain highway billboard at golden hour — 'from 60 seconds to something real'"
           className="absolute left-[-5.94%] top-[-3.91%] h-[107.18%] w-[107.15%] max-w-none object-cover"
         />

@@ -51,7 +51,8 @@ export default function Footer({
 
       {/* ---------- Bottom portrait panel (overlaps the gradient when present) ---------- */}
       <div
-        className={`relative z-10 isolate overflow-hidden rounded-t-[40px] sm:rounded-t-[60px] ${intro || moreProjects ? "-mt-[clamp(5rem,12vw,231px)]" : ""}`}
+        id="connect"
+        className={`relative z-10 isolate scroll-mt-0 overflow-hidden rounded-t-[40px] sm:rounded-t-[60px] ${intro || moreProjects ? "-mt-[clamp(5rem,12vw,231px)]" : ""}`}
       >
         <Image
           src="/images/footer-bg.jpg"

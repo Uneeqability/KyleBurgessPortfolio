@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <>
       <Nav tone="cream" />
-      <main>
+      <main className="overflow-x-clip">
         <Hero />
         <CreativeDirection />
         <Intro />

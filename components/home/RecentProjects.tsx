@@ -27,7 +27,7 @@ const PROJECTS: Project[] = [
   {
     title: "Microsoft Build",
     img: "/images/card-keynote.jpg",
-    href: "/work",
+    href: "/work/microsoft-build",
     imgClass: "absolute left-0 top-[-10.49%] h-[110.48%] w-full object-cover",
     overlay: "bg-black/30",
   },
@@ -42,7 +42,7 @@ const PROJECTS: Project[] = [
   {
     title: "Twain Dating App",
     img: "/images/card-twain.png",
-    href: "/work",
+    href: "/work/twain",
     bg: "#D2E0CA",
     imgClass: "absolute left-[-32.98%] top-[-60.57%] w-[172.05%] max-w-none opacity-85",
     overlay: "bg-black/20",

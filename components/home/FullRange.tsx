@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import CardShuffle from "./CardShuffle";
 import ToolPills from "./ToolPills";
 import Reveal from "@/components/Reveal";
@@ -7,13 +8,15 @@ import { BlurTextEffect } from "@/components/ui/blur-text-effect";
 function FeatureBlock({
   title,
   body,
+  href,
   children,
 }: {
   title: string;
   body: string;
+  href?: string;
   children: React.ReactNode;
 }) {
-  return (
+  const inner = (
     <article className="mx-auto flex w-full max-w-[403px] flex-col items-center text-center">
       <h3 className="font-serif text-[clamp(1.4rem,1.875vw,36px)] leading-tight text-espresso">
         {title}
@@ -23,6 +26,16 @@ function FeatureBlock({
       </p>
       <div className="mt-6 w-full">{children}</div>
     </article>
+  );
+  return href ? (
+    <Link
+      href={href}
+      className="block transition-opacity duration-300 hover:opacity-90"
+    >
+      {inner}
+    </Link>
+  ) : (
+    inner
   );
 }
 
@@ -51,6 +64,7 @@ export default function FullRange() {
               <FeatureBlock
                 title="Presentation & Narrative Design"
                 body="High-stakes decks that hold a room, from CEO keynotes to pitches. Narrative and design, handled together."
+                href="/work/presentation"
               >
                 <div className="relative aspect-[537/527] w-full overflow-hidden rounded-[30px] bg-[#E1DBC6]">
                   <div className="absolute left-[10.9%] top-[16%] w-[78.4%]">
@@ -60,7 +74,7 @@ export default function FullRange() {
               </FeatureBlock>
             </Reveal>
 
-            <Reveal delay={80}>
+            <Reveal delay={80} className="sm:mt-[clamp(2rem,5vw,4rem)]">
               <FeatureBlock
                 title="Brand Identity & Web Design"
                 body="Brand identity and the sites that carry it, designed end to end. From first logo to live build."
@@ -84,6 +98,7 @@ export default function FullRange() {
               <FeatureBlock
                 title="Producing & Editing"
                 body="Thirteen years producing and cutting for Netflix, Amazon, and Meta. Original series and campaigns, concept to final cut."
+                href="/work/production"
               >
                 <div className="relative aspect-[537/597] w-full overflow-hidden rounded-[30px] bg-[#ADA59C]">
                 {/* Looping footage UNDER the TV — black fill + luminosity = B&W.

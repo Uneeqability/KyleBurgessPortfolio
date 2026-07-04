@@ -1,11 +1,12 @@
 import Link from "next/link";
+import ContactLink from "./ContactLink";
 
 type NavTone = "cream" | "ink" | "bar";
 
 const LINKS = [
   { label: "home", href: "/" },
   { label: "work", href: "/work" },
-  { label: "contact", href: "/contact" },
+  { label: "contact", href: "#connect" },
 ];
 
 /**
@@ -29,16 +30,20 @@ export default function Nav({ tone = "cream" }: { tone?: NavTone }) {
     <header className="absolute inset-x-0 top-0 z-50">
       <nav className="container-content flex items-center justify-end gap-1 py-6 font-sans text-[0.8rem] sm:gap-4 sm:py-7 sm:text-[0.95rem]">
         <ul className="flex items-center gap-1 sm:gap-2">
-          {LINKS.map((link) => (
-            <li key={link.href}>
-              <Link
-                href={link.href}
-                className={`rounded-full px-3 py-2 transition-colors sm:px-4 ${text} ${textHover}`}
-              >
-                {link.label}
-              </Link>
-            </li>
-          ))}
+          {LINKS.map((link) => {
+            const cls = `rounded-full px-3 py-2 transition-colors sm:px-4 ${text} ${textHover}`;
+            return (
+              <li key={link.href}>
+                {link.label === "contact" ? (
+                  <ContactLink className={cls} />
+                ) : (
+                  <Link href={link.href} className={cls}>
+                    {link.label}
+                  </Link>
+                )}
+              </li>
+            );
+          })}
         </ul>
         <a
           href="/Kyle-Burgess-Resume.pdf"
@@ -70,16 +75,21 @@ function NavBar() {
 
         <div className="flex items-center gap-1 sm:gap-4">
           <ul className="hidden items-center gap-1 sm:flex sm:gap-2">
-            {LINKS.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="rounded-full px-3 py-2 transition-colors hover:text-cream sm:px-4"
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
+            {LINKS.map((link) => {
+              const cls =
+                "rounded-full px-3 py-2 transition-colors hover:text-cream sm:px-4";
+              return (
+                <li key={link.href}>
+                  {link.label === "contact" ? (
+                    <ContactLink className={cls} />
+                  ) : (
+                    <Link href={link.href} className={cls}>
+                      {link.label}
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
           </ul>
           <a
             href="/Kyle-Burgess-Resume.pdf"
