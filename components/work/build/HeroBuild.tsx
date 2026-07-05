@@ -38,7 +38,7 @@ function HeroMobile() {
       </Reveal>
       <div className="mx-auto mt-9 max-w-sm overflow-hidden rounded-t-2xl border-2 border-white/50 bg-[#191919] shadow-[0_12px_30px_rgba(0,0,0,0.15)]">
         <BuildHeroVideo
-          className="aspect-[1018/610] w-full object-cover"
+          className="aspect-[1018/610] w-full rounded-t-2xl object-cover"
           poster="/images/build/hero-poster.jpg"
           buttonSize="9vw"
         />
@@ -80,7 +80,7 @@ function HeroDesktop() {
               crop so the video fills to the cut edge (no black bezel sliver). */}
           <div className="absolute left-1/2 top-[3.29%] bottom-[-0.3vw] w-[96.4%] -translate-x-1/2 overflow-hidden rounded-t-[0.9vw]">
             <BuildHeroVideo
-              className="h-full w-full object-cover"
+              className="h-full w-full rounded-t-[0.9vw] object-cover"
               poster="/images/build/hero-poster.jpg"
               buttonSize="2.4vw"
             />

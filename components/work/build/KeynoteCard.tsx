@@ -29,7 +29,13 @@ const PERIOD = 50; // seconds per full revolution
 // (Figma frame 607:2260). Path points map linearly into this box.
 const VBW = 883.715;
 const VBH = 696.649;
-const BOX = { left: 18.0, top: 7.79, w: 62.54, h: 83.49 }; // % of the card
+// Desktop keeps the exact Figma placement. On mobile the card is small, so the
+// loop's central "eye" is too tight for legible text — we blow the orbit up
+// (it overflows the card edges, clipped, so chips drift in/out of frame) which
+// opens the eye enough for a readable center statement. Kept centered on the
+// same point as the desktop box.
+const BOX = { left: 18.0, top: 7.79, w: 62.54, h: 83.49 }; // % of the card (desktop)
+const BOX_MOBILE = { left: -0.6, top: -4.7, w: 99.8, h: 108.5 }; // enlarged: ~1.6× wide, 1.3× tall
 
 // VISIBLE_ORBIT is the exact Figma vector (607:2260), rendered as-is — including
 // the decorative overlap tail at the top-left. MOTION_ORBIT is the same line but
@@ -53,6 +59,8 @@ export default function KeynoteCard() {
     const path = pathRef.current;
     if (!root || !path) return;
     const len = path.getTotalLength();
+    // Mobile uses the enlarged orbit so the center statement fits the eye.
+    const box = root.clientWidth < 640 ? BOX_MOBILE : BOX;
 
     // Position one chip at path-fraction f (0..1). Outer carries the orbit
     // translate (no rotation); inner carries depth + entrance scale/opacity.
@@ -61,8 +69,8 @@ export default function KeynoteCard() {
       const inner = innerRefs.current[i];
       if (!outer || !inner) return;
       const pt = path.getPointAtLength((((f % 1) + 1) % 1) * len);
-      const x = ((BOX.left + (pt.x / VBW) * BOX.w) / 100) * w;
-      const y = ((BOX.top + (pt.y / VBH) * BOX.h) / 100) * h;
+      const x = ((box.left + (pt.x / VBW) * box.w) / 100) * w;
+      const y = ((box.top + (pt.y / VBH) * box.h) / 100) * h;
       outer.style.transform = `translate(${x}px, ${y}px) translate(-50%,-50%)`;
       const depth = Math.min(1, Math.max(0, pt.y / VBH)); // 0 back (top) .. 1 front (bottom)
       outer.style.zIndex = String(10 + Math.round(depth * 10));
@@ -120,13 +128,7 @@ export default function KeynoteCard() {
       {/* The exact Figma orbit line (607:2260), drawn as-is. A second, invisible
           copy is the closed path the chips actually ride (getPointAtLength). */}
       <svg
-        className="pointer-events-none absolute overflow-visible"
-        style={{
-          left: `${BOX.left}%`,
-          top: `${BOX.top}%`,
-          width: `${BOX.w}%`,
-          height: `${BOX.h}%`,
-        }}
+        className="pointer-events-none absolute left-[-0.6%] top-[-4.7%] h-[108.5%] w-[99.8%] overflow-visible sm:left-[18%] sm:top-[7.79%] sm:h-[83.49%] sm:w-[62.54%]"
         viewBox={`0 0 ${VBW} ${VBH}`}
         preserveAspectRatio="none"
         fill="none"
@@ -150,7 +152,7 @@ export default function KeynoteCard() {
             outerRefs.current[i] = el;
           }}
           data-keynote-chip={i}
-          className="absolute left-0 top-0 h-[9.5cqw] w-[9.5cqw] will-change-transform"
+          className="absolute left-0 top-0 h-[8cqw] w-[8cqw] will-change-transform sm:h-[9.5cqw] sm:w-[9.5cqw]"
         >
           <div
             ref={(el) => {
@@ -166,7 +168,7 @@ export default function KeynoteCard() {
       {/* Center statement (static — never moves) */}
       <p
         data-keynote-text
-        className="absolute left-1/2 top-[42.4%] z-20 flex h-[15.14%] w-[46%] -translate-x-1/2 items-center justify-center text-center font-roboto text-[clamp(10px,3.6cqw,15px)] leading-[1.35] text-[#353536] sm:w-[25.81%] sm:text-[1.56cqw]"
+        className="absolute left-1/2 top-[42.4%] z-20 flex h-[15.14%] w-[46%] -translate-x-1/2 items-center justify-center text-center font-roboto text-[clamp(9px,3cqw,15px)] leading-[1.3] text-[#353536] sm:w-[25.81%] sm:text-[1.56cqw] sm:leading-[1.35]"
       >
         The keynote wasn&rsquo;t just built for the stage. It became the
         throughline for the whole release, and the releases still to come.

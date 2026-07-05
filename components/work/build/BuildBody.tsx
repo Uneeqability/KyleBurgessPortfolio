@@ -291,8 +291,9 @@ function BodyMobile() {
         </div>
       </div>
 
-      {/* Closing keynote card */}
-      <div className="relative aspect-[1412/834] w-full">
+      {/* Closing keynote card — taller aspect than desktop so the orbit stretches
+          vertically and the center statement has room to stay legible. */}
+      <div className="relative aspect-[1412/1080] w-full">
         <KeynoteCard />
       </div>
     </section>

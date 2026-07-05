@@ -55,10 +55,32 @@ const dmSerifText = DM_Serif_Text({
   weight: ["400"],
 });
 
+const siteUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : "http://localhost:3000";
+
+const title = "Kyle Burgess — Portfolio";
+const description =
+  "Creative direction for high-stakes moments. Executive communication design, motion, and brand systems at Microsoft AI.";
+
 export const metadata: Metadata = {
-  title: "Kyle Burgess — Portfolio",
-  description:
-    "Creative direction for high-stakes moments. Executive communication design, motion, and brand systems at Microsoft AI.",
+  metadataBase: new URL(siteUrl),
+  title,
+  description,
+  // og:image / twitter:image are supplied by app/opengraph-image.png +
+  // app/twitter-image.png (file-convention). These fill in the title/description
+  // that show alongside the header image in link previews.
+  openGraph: {
+    title,
+    description,
+    siteName: "Kyle Burgess",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+  },
 };
 
 export default function RootLayout({
