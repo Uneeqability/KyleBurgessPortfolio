@@ -27,6 +27,8 @@ export default function ImpactSplit() {
         <img
           src="/images/build/work-frontier.jpg"
           alt="Keynote still — Microsoft Frontier Tuning layer stack"
+          loading="lazy"
+          decoding="async"
           className="absolute inset-0 size-full object-cover"
         />
       </div>
@@ -34,6 +36,8 @@ export default function ImpactSplit() {
         <img
           src="/images/build/work-models.jpg"
           alt="Keynote still — 7 New Microsoft AI Models"
+          loading="lazy"
+          decoding="async"
           className="absolute inset-0 size-full object-cover"
         />
       </div>

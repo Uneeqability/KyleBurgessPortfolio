@@ -32,6 +32,8 @@ export default function VibeChartCard() {
       <img
         src="/images/mai/create-a-chart.png"
         alt="MAI Create-a-chart tool building an on-brand chart"
+        loading="lazy"
+        decoding="async"
         className="absolute left-[6.52%] top-[7.33%] w-[64.8%]"
       />
 
@@ -46,6 +48,8 @@ export default function VibeChartCard() {
         src="/images/mai/arrow-vibe.svg"
         alt=""
         aria-hidden
+        loading="lazy"
+        decoding="async"
         className="absolute left-[68.6%] top-[16.3%] w-[9.35%]"
       />
 

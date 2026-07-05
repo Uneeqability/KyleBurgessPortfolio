@@ -81,6 +81,8 @@ function Card({ project }: { project: Project }) {
       <img
         src={project.img}
         alt={project.title}
+        loading="lazy"
+        decoding="async"
         className={`${project.imgClass} transition-transform duration-700 group-hover:scale-[1.03]`}
       />
       <div className={`absolute inset-0 ${project.overlay}`} />

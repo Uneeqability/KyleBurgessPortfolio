@@ -94,6 +94,8 @@ export default function LaptopScreens() {
           data-dur={s.dur}
           src={`/images/mai/${s.src}.png`}
           alt={s.alt}
+          loading="lazy"
+          decoding="async"
           className={`${screenBase} ${s.pos}`}
         />
       ))}
@@ -129,6 +131,8 @@ export default function LaptopScreens() {
       <img
         src="/images/mai/laptop-device.png"
         alt="MAI model pages and technical blogs shown on a laptop"
+        loading="lazy"
+        decoding="async"
         className="absolute left-[0.35%] top-[0.21%] z-10 w-[99.29%]"
       />
     </div>

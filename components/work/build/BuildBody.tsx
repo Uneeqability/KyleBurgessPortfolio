@@ -84,6 +84,8 @@ function BodyDesktop() {
           <img
             src="/images/build/role.jpg"
             alt="Mustafa Suleyman on the Build 2026 stage — 'Humanist Superintelligence'"
+            loading="lazy"
+            decoding="async"
             className="absolute left-0 top-[-8.26%] h-[124.46%] w-full max-w-none object-cover"
           />
         </Reveal>
@@ -105,6 +107,8 @@ function BodyDesktop() {
           <img
             src="/images/build/challenge.jpg"
             alt="Keynote stage showing the model architecture diagram"
+            loading="lazy"
+            decoding="async"
             className="absolute left-0 top-[-24.35%] h-[127.45%] w-full max-w-none object-cover"
           />
         </Reveal>
@@ -125,6 +129,8 @@ function BodyDesktop() {
           <img
             src="/images/build/whatidid.jpg"
             alt="Keynote stage with the model reveal panels"
+            loading="lazy"
+            decoding="async"
             className="absolute left-0 top-[-40.52%] h-[157.45%] w-full max-w-none object-cover"
           />
         </Reveal>
@@ -144,6 +150,8 @@ function BodyDesktop() {
           <img
             src="/images/build/outcome.jpg"
             alt="Keynote stage — Microsoft and Mayo Clinic partnership"
+            loading="lazy"
+            decoding="async"
             className="absolute inset-0 size-full object-cover"
           />
         </Reveal>
@@ -213,7 +221,7 @@ function MImage({
   return (
     <Reveal blur className={`relative w-full overflow-hidden ${rounded}`}>
       <div className={ratio}>
-        <img src={src} alt={alt} className="absolute inset-0 size-full object-cover" />
+        <img src={src} alt={alt} loading="lazy" decoding="async" className="absolute inset-0 size-full object-cover" />
       </div>
     </Reveal>
   );

@@ -52,12 +52,18 @@ function Portrait({ className = "" }: { className?: string }) {
         data-hero-portrait="sharp"
         src="/images/hero-kyle.png"
         alt="Kyle Burgess"
+        loading="eager"
+        fetchPriority="high"
+        decoding="async"
         className={`pointer-events-none absolute z-20 max-w-none opacity-0 ${className}`}
       />
       <img
         data-hero-portrait="soft"
         src="/images/hero-kyle.png"
         aria-hidden
+        loading="eager"
+        fetchPriority="high"
+        decoding="async"
         className={`pointer-events-none absolute z-20 max-w-none opacity-0 blur-[5px] [mask-image:linear-gradient(to_bottom,transparent_52%,black_86%)] ${className}`}
       />
     </>
@@ -271,6 +277,9 @@ export default function Hero() {
             data-hero-portrait="sharp"
             src="/images/hero-kyle.png"
             alt="Kyle Burgess"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
             className="pointer-events-none absolute left-[-109.34%] top-[-12.31%] h-[112.34%] w-[264.13%] max-w-none opacity-0"
           />
         </div>

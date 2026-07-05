@@ -40,6 +40,8 @@ export default function HeroPhones() {
         <img
           src="/images/twain/hero-splash.png"
           alt="Twain app splash screen"
+          loading="lazy"
+          decoding="async"
           className="absolute left-0 top-0 h-[127.54%] w-full max-w-none"
         />
       </div>
@@ -51,6 +53,8 @@ export default function HeroPhones() {
         <img
           src="/images/twain/hero-alyssa.png"
           alt="Twain profile screen — Alyssa, 29"
+          loading="lazy"
+          decoding="async"
           className="absolute left-[-0.05%] top-0 h-[147.67%] w-[100.11%] max-w-none"
         />
       </div>

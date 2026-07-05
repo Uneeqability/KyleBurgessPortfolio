@@ -24,12 +24,16 @@ function Headshot({ className = "" }: { className?: string }) {
         src="/images/headshot.png"
         alt=""
         aria-hidden
+        loading="lazy"
+        decoding="async"
         className="absolute inset-0 size-full rounded-full object-cover blur-[1.04vw]"
       />
       {/* Clear circle (Ellipse 27065) */}
       <img
         src="/images/headshot.png"
         alt="Kyle Burgess"
+        loading="lazy"
+        decoding="async"
         className="absolute inset-0 size-full rounded-full object-cover"
       />
     </div>

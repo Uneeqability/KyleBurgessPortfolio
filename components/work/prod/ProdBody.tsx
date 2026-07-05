@@ -23,7 +23,7 @@ function Logo({ src, alt }: { src?: string; alt: string }) {
   return (
     <div className="flex w-[22%] items-center justify-center px-[1.5vw]">
       {src && (
-        <img src={src} alt={alt} className="max-h-[2.9vw] w-auto max-w-[8.5vw] object-contain" />
+        <img src={src} alt={alt} loading="lazy" decoding="async" className="max-h-[2.9vw] w-auto max-w-[8.5vw] object-contain" />
       )}
     </div>
   );
@@ -164,7 +164,7 @@ function Panel({
     <div className="flex h-full flex-col rounded-[1.04vw] bg-[#F7ECD9]">
       <div className="flex flex-1 items-center justify-center px-[2vw]">
         {logo ? (
-          <img src={logo} alt={client} className="max-h-[4.5vw] w-auto max-w-[9vw] object-contain" />
+          <img src={logo} alt={client} loading="lazy" decoding="async" className="max-h-[4.5vw] w-auto max-w-[9vw] object-contain" />
         ) : (
           <span className="font-serif text-[min(1.77vw,34px)] italic text-espresso">{heading}</span>
         )}
@@ -314,7 +314,7 @@ function BodyDesktop() {
 function MRow({ logo, client, project, role }: { logo?: string; client: string; project: string; role: string }) {
   return (
     <div className="mt-3 rounded-2xl bg-[#F7ECD9] px-4 py-4">
-      {logo && <img src={logo} alt={client} className="mx-auto mb-3 h-6 w-auto object-contain" />}
+      {logo && <img src={logo} alt={client} loading="lazy" decoding="async" className="mx-auto mb-3 h-6 w-auto object-contain" />}
       <div className="grid grid-cols-3 divide-x divide-[#3b230e]/20 text-center">
         {[["Client", client], ["Project", project], ["Role", role]].map(([h, v]) => (
           <div key={h} className="flex flex-col gap-1 px-2">

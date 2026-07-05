@@ -48,6 +48,8 @@ export default function VibeVoiceCard() {
       <img
         src="/images/mai/cafe-sketch.png"
         alt="Hand-drawn sketch of a busy cafe"
+        loading="lazy"
+        decoding="async"
         className="absolute left-[17%] top-[13%] aspect-[405/463] w-[66%] object-cover mix-blend-darken"
       />
 

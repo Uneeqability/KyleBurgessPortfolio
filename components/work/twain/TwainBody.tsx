@@ -114,8 +114,10 @@ function BodyDesktop() {
         <Reveal blur className="relative h-[39.79vw] w-[78.75vw] overflow-hidden rounded-[1.15vw]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/twain/urban-billboard.png"
+            src="/images/twain/urban-billboard.jpg"
             alt="twain billboard on a city storefront — 'skip to the part that matters'"
+            loading="lazy"
+            decoding="async"
             className="absolute left-[-0.04%] top-[-30.39%] h-[131.34%] w-full max-w-none object-cover"
           />
         </Reveal>
@@ -154,6 +156,8 @@ function BodyDesktop() {
           <img
             src="/images/twain/golden-billboard.jpg"
             alt="twain highway billboard at golden hour — 'from 60 seconds to something real'"
+            loading="lazy"
+            decoding="async"
             className="absolute left-[-5.94%] top-[-3.91%] h-[107.18%] w-[107.15%] max-w-none object-cover"
           />
         </Reveal>
@@ -251,8 +255,10 @@ function BodyMobile() {
       <Reveal blur className="relative aspect-[1512/764] w-full overflow-hidden rounded-[4vw]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/images/twain/urban-billboard.png"
+          src="/images/twain/urban-billboard.jpg"
           alt="twain billboard on a city storefront — 'skip to the part that matters'"
+          loading="lazy"
+          decoding="async"
           className="absolute left-[-0.04%] top-[-30.39%] h-[131.34%] w-full max-w-none object-cover"
         />
       </Reveal>
@@ -289,6 +295,8 @@ function BodyMobile() {
         <img
           src="/images/twain/golden-billboard.jpg"
           alt="twain highway billboard at golden hour — 'from 60 seconds to something real'"
+          loading="lazy"
+          decoding="async"
           className="absolute left-[-5.94%] top-[-3.91%] h-[107.18%] w-[107.15%] max-w-none object-cover"
         />
       </Reveal>

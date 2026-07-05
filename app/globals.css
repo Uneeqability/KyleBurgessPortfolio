@@ -168,7 +168,6 @@ body {
   transition-delay: var(--deck-delay, 0ms);
   transform-origin: center;
   backface-visibility: hidden;
-  will-change: transform, opacity;
 }
 .deck-slide.is-in {
   opacity: 1;
@@ -183,7 +182,6 @@ body {
   transition-duration: 0.55s;
   transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   transition-delay: var(--deck-delay, 0ms);
-  will-change: transform, opacity;
 }
 .deck-slide-m.is-in {
   opacity: 1;

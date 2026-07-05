@@ -83,7 +83,7 @@ function Row({
   return (
     <div className="mt-[2vw] flex h-[6.3vw] w-full items-center rounded-[1.04vw] bg-[#F7ECD9]">
       <div className="flex w-[24.8%] items-center justify-center px-[1.5vw]">
-        {logo && <img src={logo} alt={client} className={`${logoClass} w-auto object-contain`} />}
+        {logo && <img src={logo} alt={client} loading="lazy" decoding="async" className={`${logoClass} w-auto object-contain`} />}
       </div>
       <HDivider />
       <Col head="Client" val={client} />
@@ -157,6 +157,8 @@ function BodyMobile() {
                   src={p.logo}
                   alt={p.client}
                   style={{ height: `${p.mLogoH ?? 24}px` }}
+                  loading="lazy"
+                  decoding="async"
                   className="w-auto max-w-[45%] object-contain"
                 />
               </div>

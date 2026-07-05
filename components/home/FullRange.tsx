@@ -110,6 +110,8 @@ export default function FullRange() {
                     src="/videos/hollywood.webp"
                     alt=""
                     aria-hidden
+                    loading="lazy"
+                    decoding="async"
                     className="size-full object-cover opacity-[0.65] mix-blend-luminosity"
                   />
                 </div>
@@ -118,6 +120,8 @@ export default function FullRange() {
                 <img
                   src="/images/retro-tv.png"
                   alt="Producing and editing — retro TV"
+                  loading="lazy"
+                  decoding="async"
                   className="absolute left-[-58.9%] top-[-25.8%] w-[163.5%] max-w-none"
                 />
               </div>

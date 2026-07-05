@@ -51,6 +51,8 @@ export default function FannedPhones() {
           key={p.src}
           src={`/images/twain/${p.src}.png`}
           alt={p.alt}
+          loading="lazy"
+          decoding="async"
           className={`absolute object-contain ${p.box} ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform`}
           style={{
             transform: shown ? "none" : `translateX(${p.dx}) scale(0.9)`,

@@ -35,7 +35,7 @@ function Layer({
   return (
     <div className={`absolute ${box}`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={src} alt={alt} className={`absolute inset-0 size-full ${fit} ${extra}`} />
+      <img src={src} alt={alt} loading="lazy" decoding="async" className={`absolute inset-0 size-full ${fit} ${extra}`} />
     </div>
   );
 }
@@ -96,6 +96,8 @@ export function ProductionVisual() {
           src="/videos/hollywood.webp"
           alt=""
           aria-hidden
+          loading="lazy"
+          decoding="async"
           className="absolute inset-0 size-full object-cover opacity-65 mix-blend-luminosity"
         />
       </div>

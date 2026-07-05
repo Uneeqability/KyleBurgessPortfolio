@@ -98,7 +98,6 @@ export default function DeckCard({
                   perspective: "700px", // gives the inner reveal its 3D
                   transformStyle: "preserve-3d",
                   transform: FLAT,
-                  willChange: "transform",
                   // eased follow gives the tilt "weight" — it settles rather than snapping
                   transition: "transform 0.4s cubic-bezier(0.22, 1, 0.36, 1)",
                 }),
@@ -122,6 +121,8 @@ export default function DeckCard({
             <img
               src={`${P}/${slug}/${s.file}`}
               alt=""
+              loading="lazy"
+              decoding="async"
               className="absolute inset-0 size-full object-cover"
             />
           </div>

@@ -14,6 +14,8 @@ export default function VibeToolCard() {
       <img
         src="/images/mai/build-pms.png"
         alt="MAI-Transcribe self-serve tool where PMs enter model data"
+        loading="lazy"
+        decoding="async"
         className="absolute left-[1.15%] top-[13.24%] w-[97.7%]"
       />
     </div>

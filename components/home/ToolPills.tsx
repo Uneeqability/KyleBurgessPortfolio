@@ -81,6 +81,8 @@ export default function ToolPills() {
             src={`/images/tools/${tool.icon}.svg`}
             alt=""
             aria-hidden
+            loading="lazy"
+            decoding="async"
             className="size-[18px] shrink-0"
           />
           {tool.label}

@@ -53,6 +53,8 @@ export default function BrandBento() {
         <img
           src="/images/twain/bento-left.png"
           alt="twain brand mark — vibes go live"
+          loading="lazy"
+          decoding="async"
           className="absolute inset-0 size-full object-cover"
         />
       </div>
@@ -93,6 +95,8 @@ export default function BrandBento() {
         <img
           src="/images/twain/app-dock.png"
           alt="The twain app icon on an iOS home-screen dock"
+          loading="lazy"
+          decoding="async"
           className="absolute inset-0 size-full object-cover"
         />
       </div>

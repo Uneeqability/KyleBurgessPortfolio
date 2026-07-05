@@ -66,6 +66,8 @@ export default function ChallengePhones() {
         src="/images/twain/challenge-left-phone.png"
         alt=""
         aria-hidden
+        loading="lazy"
+        decoding="async"
         className="absolute left-[45.18%] top-[6.37%] h-[88.14%] w-[22.27%] object-contain"
       />
 
@@ -78,6 +80,8 @@ export default function ChallengePhones() {
           src="/images/twain/bubble-heychat.png"
           alt=""
           aria-hidden
+          loading="lazy"
+          decoding="async"
           className="absolute left-[-74.28%] top-[-59.22%] h-[360%] w-[248.56%] max-w-none"
         />
       </div>
@@ -90,6 +94,8 @@ export default function ChallengePhones() {
           src="/images/twain/bubble-heywhatsup.png"
           alt=""
           aria-hidden
+          loading="lazy"
+          decoding="async"
           className="absolute left-[-82.96%] top-[-167.25%] h-[462.47%] w-[289.91%] max-w-none"
         />
       </div>
@@ -102,6 +108,8 @@ export default function ChallengePhones() {
           src="/images/twain/bubble-uup.png"
           alt=""
           aria-hidden
+          loading="lazy"
+          decoding="async"
           className="absolute left-[-95.26%] top-[-274.79%] h-[520.11%] w-[292.76%] max-w-none"
         />
       </div>
@@ -110,6 +118,8 @@ export default function ChallengePhones() {
         src="/images/twain/challenge-vector2.svg"
         alt=""
         aria-hidden
+        loading="lazy"
+        decoding="async"
         className="absolute left-[58.95%] top-[45.09%] h-[3.95%] w-[3.66%]"
         style={
           {
@@ -142,6 +152,8 @@ export default function ChallengePhones() {
                 src="/images/twain/challenge-arrow.svg"
                 alt=""
                 aria-hidden
+                loading="lazy"
+                decoding="async"
                 className="block size-full max-w-none"
                 style={
                   {
@@ -166,6 +178,8 @@ export default function ChallengePhones() {
           <img
             src="/images/twain/challenge-screen.png"
             alt="Twain answer screen — Chemistry doesn't live in a chat box"
+            loading="lazy"
+            decoding="async"
             className="absolute inset-0 size-full object-cover"
           />
         </div>
@@ -174,6 +188,8 @@ export default function ChallengePhones() {
             src="/images/twain/iphone-white-frame.png"
             alt=""
             aria-hidden
+            loading="lazy"
+            decoding="async"
             className="absolute left-[-1.53%] top-[-0.96%] h-[101.92%] w-[103.05%] max-w-none"
           />
         </div>

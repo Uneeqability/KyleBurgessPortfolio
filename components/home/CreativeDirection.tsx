@@ -29,12 +29,16 @@ function LogoMarquee({ height }: { height: string }) {
         <img
           src="/images/trusted-logos.svg"
           alt={TRUSTED_ALT}
+          loading="lazy"
+          decoding="async"
           className={`${height} w-auto max-w-none shrink-0`}
         />
         <img
           src="/images/trusted-logos.svg"
           alt=""
           aria-hidden
+          loading="lazy"
+          decoding="async"
           className={`${height} w-auto max-w-none shrink-0`}
         />
       </div>

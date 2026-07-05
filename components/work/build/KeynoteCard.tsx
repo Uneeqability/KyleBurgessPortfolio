@@ -158,7 +158,7 @@ export default function KeynoteCard() {
             }}
             className="flex h-full w-full items-center justify-center rounded-full border border-[#3b230e]/15 bg-[#F7ECD9] opacity-0 will-change-transform"
           >
-            <img src={ic.src} alt={ic.alt} className="h-[62%] w-[62%] object-contain" />
+            <img src={ic.src} alt={ic.alt} loading="lazy" decoding="async" className="h-[62%] w-[62%] object-contain" />
           </div>
         </div>
       ))}

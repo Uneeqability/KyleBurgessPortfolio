@@ -61,6 +61,8 @@ export default function SiteShowcase() {
       <img
         src="/images/mai/site.png"
         alt="The live MAI-Transcribe-1.5 page on microsoft.ai"
+        loading="lazy"
+        decoding="async"
         className="absolute inset-0 h-full w-full object-contain"
       />
 
