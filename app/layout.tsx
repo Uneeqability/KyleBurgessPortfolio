@@ -6,6 +6,7 @@ import {
   Roboto_Mono,
   Loved_by_the_King,
   Libre_Baskerville,
+  DM_Serif_Text,
 } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
@@ -47,6 +48,13 @@ const libreBaskerville = Libre_Baskerville({
   weight: ["400", "700"],
 });
 
+// BidBud brand wordmark
+const dmSerifText = DM_Serif_Text({
+  variable: "--font-dm-serif",
+  subsets: ["latin"],
+  weight: ["400"],
+});
+
 export const metadata: Metadata = {
   title: "Kyle Burgess — Portfolio",
   description:
@@ -61,7 +69,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${ibmSerif.variable} ${ibmMono.variable} ${figtree.variable} ${robotoMono.variable} ${lovedByTheKing.variable} ${libreBaskerville.variable} h-full antialiased`}
+      className={`${ibmSerif.variable} ${ibmMono.variable} ${figtree.variable} ${robotoMono.variable} ${lovedByTheKing.variable} ${libreBaskerville.variable} ${dmSerifText.variable} h-full antialiased`}
     >
       <body className="min-h-full">
         <SmoothScroll />

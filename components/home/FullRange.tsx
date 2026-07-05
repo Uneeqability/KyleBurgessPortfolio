@@ -78,6 +78,7 @@ export default function FullRange() {
               <FeatureBlock
                 title="Brand Identity & Web Design"
                 body="Brand identity and the sites that carry it, designed end to end. From first logo to live build."
+                href="/work/bidbud"
               >
                 <div className="overflow-hidden rounded-[30px] bg-[#DFC4A6]">
                   <Image
