@@ -9,6 +9,7 @@ import {
   DM_Serif_Text,
 } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 import SmoothScroll from "@/components/SmoothScroll";
 
 const ibmSerif = IBM_Plex_Serif({
@@ -96,6 +97,7 @@ export default function RootLayout({
       <body className="min-h-full">
         <SmoothScroll />
         {children}
+        <Analytics />
       </body>
     </html>
   );
