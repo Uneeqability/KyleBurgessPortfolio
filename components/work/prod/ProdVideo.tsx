@@ -68,7 +68,7 @@ export default function ProdVideo({
         muted
         loop={loop}
         playsInline
-        preload="none"
+        preload="metadata"
       >
         {sources
           ? sources.map((s) => <source key={s.src} src={s.src} type={s.type} />)

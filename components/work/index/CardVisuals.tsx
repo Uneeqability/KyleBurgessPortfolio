@@ -166,15 +166,17 @@ export function PresentationVisual() {
   );
 }
 
-/* 6 — BidBud: the full hand-held iPad over the clay tint, anchored near the top
-   so the hands frame the BidBud site (object-position tuned to the Figma card). */
+/* 6 — BidBud: the full hand-held iPad over the clay tint. The source is wider
+   than the image area, so object-cover fills the height (no vertical overflow —
+   object-position Y is a no-op); a downward translate drops the iPad ~18% so the
+   clay tint shows above it and the device sits lower in the card. */
 export function BidBudVisual() {
   return (
     <Layer
       src="/images/work/bidbud-ipad.png"
       alt="Hands holding an iPad showing the BidBud website"
       box="inset-0"
-      extra="object-[50%_12%]"
+      extra="object-[50%_50%] translate-y-[18%]"
     />
   );
 }

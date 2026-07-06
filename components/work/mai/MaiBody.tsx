@@ -182,8 +182,8 @@ function BodyMobile() {
         <Reveal className="mt-3" delay={120}>
           <p className={mBody}>
             I owned the project end to end, from kickoff through launch, directing
-            an external design agency and a development agency and aligning ten
-            model PMs across six product categories.
+            an external design agency and a development agency and aligning
+            multiple model PMs across six product categories.
           </p>
         </Reveal>
       </div>

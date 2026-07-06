@@ -19,8 +19,8 @@ export default function WhatIDid() {
       >
         <p className="font-roboto text-[min(1.1458vw,22px)] leading-[1.09] text-[#353536]">
           I owned the project end to end, from kickoff through launch, directing
-          an external design agency and a development agency and aligning ten
-          model PMs across six product categories.
+          an external design agency and a development agency and aligning
+          multiple model PMs across six product categories.
         </p>
       </Reveal>
 
