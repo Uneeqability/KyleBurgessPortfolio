@@ -68,8 +68,8 @@ export default function WorkIndex() {
           <Reveal blur delay={130}>
             <WorkCard
               href="/work/production"
-              title="Production, Creation & Editing"
-              description="Thirteen years producing and cutting for Netflix, Amazon, Meta, and more."
+              title="Campaigns, Branded Content & Series"
+              description="Brand campaigns, branded content, and original series for Amazon, Meta, Netflix, and FOX."
               tint="rgba(218, 226, 227, 0.71)"
             >
               <ProductionVisual />

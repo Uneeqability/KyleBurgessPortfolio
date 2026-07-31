@@ -97,8 +97,8 @@ export default function FullRange() {
           <div className="flex flex-col gap-[4.5rem] sm:pt-[clamp(9rem,24vw,353px)]">
             <Reveal delay={120}>
               <FeatureBlock
-                title="Producing & Editing"
-                body="Thirteen years producing and cutting for Netflix, Amazon, and Meta. Original series and campaigns, concept to final cut."
+                title="Campaigns, Branded Content & Series"
+                body="Thirteen years of brand campaigns, branded content, and original series for Amazon, Meta, Netflix, and FOX. Concept to final cut."
                 href="/work/production"
               >
                 <div className="relative aspect-[537/597] w-full overflow-hidden rounded-[30px] bg-[#ADA59C]">

@@ -3,10 +3,13 @@ import Reveal from "@/components/Reveal";
 import ProdVideo from "./ProdVideo";
 
 /**
- * Production page body (Figma 60:131). A centered column of project blocks: each
- * landscape project is a video + a CLIENT/PROJECT/ROLE bar; the Meta and personal
- * blocks pair three vertical clips with a stacked info panel. Every clip is a
- * ProdVideo (autoplay-muted-in-view, restart + unmute controls). vw-mapped ÷19.2.
+ * Production page body (Figma 60:131). A centered column of project blocks split
+ * into two labeled sections — Campaigns & Branded Content, then Original Series —
+ * with the personal reel last. Each landscape project is a video + a
+ * CLIENT/PROJECT/ROLE bar (campaign entries add a one-line description); the
+ * grouped blocks pair three vertical clips with a stacked info panel. Every clip
+ * is a ProdVideo (autoplay-muted-in-view, restart + unmute controls). vw-mapped
+ * ÷19.2.
  */
 
 const V = "/videos/prod";
@@ -39,28 +42,52 @@ function Col({ head, val }: { head: string; val: string }) {
   );
 }
 
-/** Horizontal CLIENT | PROJECT | ROLE bar (1284×121). */
+/**
+ * Horizontal CLIENT | PROJECT | ROLE bar (1284×121). Campaign entries pass an
+ * optional `description`, which appears as a subtle serif-italic caption folded
+ * into the same card beneath a hairline — a tagline, not a labeled field.
+ */
 function Row({
   logo,
   client,
   project,
   role,
+  description,
 }: {
   logo?: string;
   client: string;
   project: string;
   role: string;
+  description?: string;
 }) {
   return (
-    <div className="mt-[1.8vw] flex h-[6.3vw] w-full items-center rounded-[1.04vw] bg-[#F7ECD9]">
-      <Logo src={logo} alt={client} />
-      <HDivider />
-      <Col head="Client" val={client} />
-      <HDivider />
-      <Col head="Project" val={project} />
-      <HDivider />
-      <Col head="Role" val={role} />
+    <div className="mt-[1.8vw] w-full overflow-hidden rounded-[1.04vw] bg-[#F7ECD9]">
+      <div className="flex h-[6.3vw] items-center">
+        <Logo src={logo} alt={client} />
+        <HDivider />
+        <Col head="Client" val={client} />
+        <HDivider />
+        <Col head="Project" val={project} />
+        <HDivider />
+        <Col head="Role" val={role} />
+      </div>
+      {description && (
+        <p className="border-t border-[#3b230e]/12 px-[3vw] py-[1.35vw] text-center font-serif text-[min(0.94vw,18px)] italic leading-snug text-[#3b230e]/80">
+          {description}
+        </p>
+      )}
     </div>
+  );
+}
+
+/** Centered grouping header that splits the reel into labeled sections. */
+function SectionLabel({ children }: { children: string }) {
+  return (
+    <Reveal className="w-full text-center">
+      <h2 className="font-sans text-[min(1.35vw,26px)] font-bold uppercase tracking-[0.12em] text-[#3b230e]">
+        {children}
+      </h2>
+    </Reveal>
   );
 }
 
@@ -100,12 +127,14 @@ function MBadgeStack({ labels }: { labels: string[] }) {
   );
 }
 
-/** A landscape project: video (with optional badge/note) + info bar. */
+/** A landscape project: video (with optional badge/note) + info bar + optional
+    one-line campaign description. */
 function Landscape({
   src,
   aspect,
   badges,
   note,
+  description,
   client,
   project,
   role,
@@ -115,6 +144,7 @@ function Landscape({
   aspect: string;
   badges?: string[];
   note?: string;
+  description?: string;
   client: string;
   project: string;
   role: string;
@@ -131,7 +161,7 @@ function Landscape({
         {badges && <BadgeStack labels={badges} />}
         <ProdVideo src={src} />
       </Reveal>
-      <Row logo={logo} client={client} project={project} role={role} />
+      <Row logo={logo} client={client} project={project} role={role} description={description} />
     </div>
   );
 }
@@ -146,19 +176,22 @@ function VRow({ head, val }: { head: string; val: string }) {
   );
 }
 
-/** Vertical info panel for the Meta / personal blocks (logo or heading on top). */
+/** Vertical info panel for the grouped blocks (logo or heading on top). Campaign
+    entries fold an optional serif-italic caption in beneath the metadata. */
 function Panel({
   logo,
   heading,
   client,
   project,
   role,
+  description,
 }: {
   logo?: string;
   heading?: string;
   client: string;
   project: string;
   role: string;
+  description?: string;
 }) {
   return (
     <div className="flex h-full flex-col rounded-[1.04vw] bg-[#F7ECD9]">
@@ -174,6 +207,11 @@ function Panel({
         <VRow head="Project" val={project} />
         <VRow head="Role" val={role} />
       </div>
+      {description && (
+        <p className="border-t border-[#3b230e]/12 px-[1.6vw] py-[1.2vw] text-center font-serif text-[min(0.8vw,15px)] italic leading-snug text-[#3b230e]/80">
+          {description}
+        </p>
+      )}
     </div>
   );
 }
@@ -195,12 +233,15 @@ function BodyDesktop() {
           </Reveal>
         </div>
 
+        {/* ---- Campaigns & Branded Content ---- */}
+        <SectionLabel>Campaigns &amp; Branded Content</SectionLabel>
+
         {/* Amazon Alexa */}
         <Landscape
           src={`${V}/prod-alexa.mp4`}
           aspect="aspect-[1284/698]"
           badges={["Branded Content"]}
-          note="*Amazon aired this as a national commercial!"
+          description="Amazon aired this as a national commercial."
           logo={`${L}/alexa.svg`}
           client="Amazon Alexa"
           project="Alexa Stories"
@@ -226,9 +267,13 @@ function BodyDesktop() {
               client="Meta/Instagram"
               project="IGTV & Reels Product Rollout"
               role="Executive Producer"
+              description="A multi-format product rollout delivered as platform-native cuts across Instagram surfaces."
             />
           </div>
         </div>
+
+        {/* ---- Original Series ---- */}
+        <SectionLabel>Original Series</SectionLabel>
 
         {/* Amazon Music — The Walk-In */}
         <Landscape
@@ -263,7 +308,27 @@ function BodyDesktop() {
           role="Series Creator/Producer & Editor"
         />
 
-        {/* Personal — panel + 3 vertical clips */}
+        {/* Hello Pictures — America Sings! */}
+        <Landscape
+          src={`${V}/prod-hellopictures.mp4`}
+          aspect="aspect-[1280/691]"
+          logo={`${L}/hellopictures.png`}
+          client="Hello Pictures"
+          project="America Sings!"
+          role="Series Creator/Producer & Editor"
+        />
+
+        {/* Studio71 — Guess Who's Home */}
+        <Landscape
+          src={`${V}/prod-studio71.mp4`}
+          aspect="aspect-[1268/684]"
+          logo={`${L}/studio71.svg`}
+          client="Studio71"
+          project="Guess Who’s Home"
+          role="Series Creator/Producer & Editor"
+        />
+
+        {/* Personal — panel + 3 vertical clips (kept last) */}
         <div className="flex h-[24.84vw] w-full items-stretch gap-[1.1vw]">
           <div className="mr-auto w-[21.8vw]">
             <Panel
@@ -284,26 +349,6 @@ function BodyDesktop() {
             </Reveal>
           ))}
         </div>
-
-        {/* Hello Pictures — America Sings! */}
-        <Landscape
-          src={`${V}/prod-hellopictures.mp4`}
-          aspect="aspect-[1280/691]"
-          logo={`${L}/hellopictures.png`}
-          client="Hello Pictures"
-          project="America Sings!"
-          role="Series Creator/Producer & Editor"
-        />
-
-        {/* Studio71 — Guess Who's Home */}
-        <Landscape
-          src={`${V}/prod-studio71.mp4`}
-          aspect="aspect-[1268/684]"
-          logo={`${L}/studio71.svg`}
-          client="Studio71"
-          project="Guess Who’s Home"
-          role="Series Creator/Producer & Editor"
-        />
       </div>
     </section>
   );
@@ -311,7 +356,19 @@ function BodyDesktop() {
 
 /* ----------------------------------------------------------------- mobile -- */
 
-function MRow({ logo, client, project, role }: { logo?: string; client: string; project: string; role: string }) {
+function MRow({
+  logo,
+  client,
+  project,
+  role,
+  description,
+}: {
+  logo?: string;
+  client: string;
+  project: string;
+  role: string;
+  description?: string;
+}) {
   return (
     <div className="mt-3 rounded-2xl bg-[#F7ECD9] px-4 py-4">
       {logo && <img src={logo} alt={client} loading="lazy" decoding="async" className="mx-auto mb-3 h-6 w-auto object-contain" />}
@@ -323,7 +380,21 @@ function MRow({ logo, client, project, role }: { logo?: string; client: string; 
           </div>
         ))}
       </div>
+      {description && (
+        <p className="mt-3 border-t border-[#3b230e]/12 pt-3 text-center font-serif text-[0.8rem] italic leading-snug text-[#3b230e]/80">
+          {description}
+        </p>
+      )}
     </div>
+  );
+}
+
+/** Centered mobile grouping header. */
+function MSectionLabel({ children }: { children: string }) {
+  return (
+    <h2 className="text-center font-sans text-sm font-bold uppercase tracking-[0.12em] text-[#3b230e]">
+      {children}
+    </h2>
   );
 }
 
@@ -354,22 +425,38 @@ function BodyMobile() {
         NBC, Amazon, Meta, Netflix, and more, from first concept to final cut.
       </p>
 
+      <MSectionLabel>Campaigns &amp; Branded Content</MSectionLabel>
+
       {/* Alexa */}
       <div>
         <div className="relative aspect-[1284/698] w-full overflow-hidden rounded-2xl">
           <MBadgeStack labels={["Branded Content"]} />
           <ProdVideo src={`${V}/prod-alexa.mp4`} />
         </div>
-        <MRow logo={`${L}/alexa.svg`} client="Amazon Alexa" project="Alexa Stories" role="Executive Producer" />
+        <MRow
+          logo={`${L}/alexa.svg`}
+          client="Amazon Alexa"
+          project="Alexa Stories"
+          role="Executive Producer"
+          description="Amazon aired this as a national commercial."
+        />
       </div>
 
       {/* Meta */}
       <div>
         {trio("prod-meta", "Branded Content")}
-        <MRow logo={`${L}/meta.svg`} client="Meta/Instagram" project="IGTV & Reels Product Rollout" role="Executive Producer" />
+        <MRow
+          logo={`${L}/meta.svg`}
+          client="Meta/Instagram"
+          project="IGTV & Reels Product Rollout"
+          role="Executive Producer"
+          description="A multi-format product rollout delivered as platform-native cuts across Instagram surfaces."
+        />
       </div>
 
-      {landscapes.slice(1, 4).map((p) => (
+      <MSectionLabel>Original Series</MSectionLabel>
+
+      {landscapes.slice(1).map((p) => (
         <div key={p.src}>
           <div className={`relative w-full overflow-hidden rounded-2xl ${p.aspect}`}>
             {p.badges && <MBadgeStack labels={p.badges} />}
@@ -379,21 +466,11 @@ function BodyMobile() {
         </div>
       ))}
 
-      {/* Personal */}
+      {/* Personal — kept last */}
       <div>
         {trio("prod-life")}
         <MRow client="Me, Myself, and I" project="Globe trotting" role="Editing for fun" />
       </div>
-
-      {landscapes.slice(4).map((p) => (
-        <div key={p.src}>
-          <div className={`relative w-full overflow-hidden rounded-2xl ${p.aspect}`}>
-            {p.badges && <MBadgeStack labels={p.badges} />}
-            <ProdVideo src={`${V}/${p.src}.mp4`} />
-          </div>
-          <MRow logo={p.logo} client={p.client} project={p.project} role={p.role} />
-        </div>
-      ))}
     </section>
   );
 }

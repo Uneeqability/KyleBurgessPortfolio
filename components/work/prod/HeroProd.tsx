@@ -31,13 +31,13 @@ function HeroMobile() {
     <section className="bg-[#F7ECD9] px-5 pb-10 pt-14 text-center sm:hidden">
       <Reveal>
         <h1 className="font-serif text-[2rem] font-normal leading-[1.15] text-espresso">
-          Production, Series Creation &amp; Editing
+          Campaigns, Branded Content &amp; Series
         </h1>
       </Reveal>
       <Reveal className="mt-4" delay={120}>
         <p className="mx-auto max-w-sm font-roboto text-[0.95rem] leading-relaxed text-taupe">
-          Original series and campaigns for the brands and networks you already
-          know.
+          Brand campaigns, branded content, and original series for Amazon,
+          Meta, Netflix, and FOX.
         </p>
       </Reveal>
       <div className="relative mx-auto mt-6 h-[92vw] w-[74vw]">
@@ -64,13 +64,13 @@ function HeroDesktop() {
       <div className="absolute inset-x-0 top-[9.4vw] px-6 text-center">
         <Reveal>
           <h1 className="font-serif text-[min(3.125vw,60px)] font-normal leading-[1.2] text-espresso">
-            Production, Series Creation &amp; Editing
+            Campaigns, Branded Content &amp; Series
           </h1>
         </Reveal>
         <Reveal className="mt-[1.3vw]" delay={120}>
           <p className="mx-auto max-w-[52.3vw] font-roboto text-[min(1.302vw,25px)] leading-[1.4] text-taupe">
-            Original series and campaigns for the brands and networks you already
-            know.
+            Brand campaigns, branded content, and original series for Amazon,
+            Meta, Netflix, and FOX.
           </p>
         </Reveal>
       </div>
