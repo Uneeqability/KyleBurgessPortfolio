@@ -85,29 +85,423 @@ body {
   initial-value: 0;
 }
 
-/* Hero wordmark sheen — a soft highlight that tracks the cursor while hovering
-   the name, clipped to the glyphs. --sx/--sy follow the pointer; --glow fades
-   the highlight in on enter and out on leave. The solid currentColor layer
-   keeps the text cream the rest of the time. The clip box must contain the
-   glyph (incl. descenders), so the span carries a roomy line-height. */
+/* Hero wordmark shimmer — a crisp, slanted band of light that sweeps across
+   the name on hover, then rides the cursor, clipped to the glyphs: a white
+   core with faint warm shading either side, like light catching foil. --sp is
+   the band's position along the gradient line (px, set per piece by JS so
+   every piece of a word lines up); --glow fades it in/out. The solid
+   currentColor layer keeps the text cream otherwise. The clip box must contain
+   every glyph: the roomy line-height covers descenders, and the inline padding
+   + matching negative margin cover overhangs (Kyle's italic "e", Burgess's
+   "r") without moving anything. */
 .hero-shimmer {
+  padding-inline: 0.15em;
+  margin-inline: -0.15em;
   -webkit-text-fill-color: transparent;
   -webkit-background-clip: text;
   background-clip: text;
   background-repeat: no-repeat;
   background-image:
-    radial-gradient(
-      circle 0.75em at var(--sx, 50%) var(--sy, 50%),
-      rgba(206, 162, 74, var(--glow, 0)) 0%,
-      rgba(206, 162, 74, 0) 66%
+    linear-gradient(
+      110deg,
+      transparent calc(var(--sp, -20em) - 0.75em),
+      rgba(96, 76, 40, calc(var(--glow) * 0.34)) calc(var(--sp, -20em) - 0.32em),
+      rgba(255, 255, 255, var(--glow)) calc(var(--sp, -20em) - 0.09em),
+      rgba(255, 255, 255, var(--glow)) calc(var(--sp, -20em) + 0.09em),
+      rgba(96, 76, 40, calc(var(--glow) * 0.34)) calc(var(--sp, -20em) + 0.32em),
+      transparent calc(var(--sp, -20em) + 0.75em)
     ),
     linear-gradient(currentColor, currentColor);
-  transition: --glow 0.45s ease;
+  transition: --glow 0.3s ease;
 }
 @media (prefers-reduced-motion: reduce) {
   .hero-shimmer {
     transition: none;
   }
+}
+
+/* ------------------------------------------------------------------------
+   Hero mid-edit — see components/home/HeroMidEdit.tsx (all tunables live
+   there and arrive here as --me-* custom properties on the hero section).
+   State lives on the section as attributes:
+     data-edit      editing | committed   (Kyle at work | you interrupted)
+     data-guide     on | off | flash      (the nose smart guide)
+     data-takeover  on | off              (you have the file — desktop)
+   Kyle's chrome is sized in em of the word, so it scales with the type.
+   ------------------------------------------------------------------------ */
+
+/* Movable words: real word + its ghost share the same transform vars. */
+.me-xf {
+  display: inline-block;
+  transform-origin: 50% 50%;
+}
+.me-xf-kyle {
+  transform: translate(var(--me-kx), var(--me-ky))
+    scale(var(--me-ksx), var(--me-ksy));
+}
+.me-xf-burgess {
+  transform: translate(var(--me-bx), var(--me-by))
+    scale(var(--me-bsx), var(--me-bsy));
+}
+.me-xf-portfolio {
+  transform: translate(var(--me-px), var(--me-py))
+    scale(var(--me-psx), var(--me-psy));
+}
+/* The photo layer scales about the centre of Kyle's actual pixels. */
+.me-xf-photo {
+  transform: translate(var(--me-ix), var(--me-iy))
+    scale(var(--me-isx), var(--me-isy));
+  transform-origin: var(--me-iox) var(--me-ioy);
+}
+[data-takeover="on"] {
+  user-select: none;
+}
+[data-takeover="on"] [data-me-word] {
+  cursor: default;
+}
+
+/* The mis-kerned "g" (GSAP animates the vars; no CSS transition). It sits
+   outside the sheen's text clip (see BurgessGlyphs). The fixed line-height
+   gives the real g and its ghost the same box, so they rotate about the same
+   point and Kyle's cursor stays on the letter. */
+.me-g {
+  position: relative;
+  display: inline-block;
+  line-height: 1.25;
+  transform: translateY(var(--me-g-drop)) rotate(var(--me-g-rot));
+  transform-origin: 50% 80%;
+}
+
+/* Invisible copy of a word that sizes the selection boxes. */
+.me-ghost {
+  color: transparent;
+  user-select: none;
+}
+/* The Figma text box: advance width × the 0.92em line height. The right edge
+   adds back CSS's trailing letter-spacing (-0.044em after the last letter),
+   which Figma doesn't count. */
+.me-box {
+  position: absolute;
+  inset: 0.165em -0.044em 0.165em 0;
+  pointer-events: none;
+}
+
+/* Kyle's chrome (his multiplayer colour); fades when you interrupt him. */
+.me-kyle-chrome {
+  transition:
+    opacity 220ms ease,
+    transform 320ms ease;
+}
+[data-edit="committed"] .me-kyle-chrome {
+  opacity: 0;
+}
+.me-box--kyle {
+  border: 1px solid var(--me-kyle);
+}
+.me-handle {
+  position: absolute;
+  background: #fff;
+  transform: translate(-50%, -50%);
+}
+.me-handle--kyle {
+  width: clamp(5px, 0.05em, 7px);
+  height: clamp(5px, 0.05em, 7px);
+  border: 1px solid var(--me-kyle);
+}
+
+/* Size tags. */
+.me-tag {
+  position: absolute;
+  white-space: nowrap;
+  color: #fff;
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0;
+  padding: 0.4em 0.6em;
+  border-radius: 0.35em;
+}
+.me-tag--kyle {
+  background: var(--me-kyle);
+  font-size: clamp(7px, 0.075em, 12px);
+}
+.me-tag[data-pos="bottom"] {
+  top: calc(100% + 0.6em);
+  left: 50%;
+  transform: translateX(-50%);
+}
+.me-tag[data-pos="top-right"] {
+  bottom: calc(100% + 0.6em);
+  right: -0.4em;
+}
+
+/* Kyle's Figma multiplayer cursor, gripping the bottom of the g's lower loop —
+   low enough that his name tag hangs below the word, clear of "portfolio". */
+.me-cursor {
+  position: absolute;
+  left: 34%;
+  top: 95%;
+  width: 0;
+  height: 0;
+}
+[data-edit="committed"] .me-cursor {
+  transform: translate(0.12em, 0.08em); /* steps aside as it fades */
+}
+/* Sized to read unmistakably as Figma's multiplayer cursor. */
+.me-cursor-arrow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: clamp(22px, 0.24em, 44px);
+  height: auto;
+  overflow: visible;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+.me-cursor-name {
+  position: absolute;
+  /* label's top-left tucks just past the arrowhead's right point */
+  left: clamp(13px, 0.144em, 26px);
+  top: clamp(21px, 0.232em, 43px);
+  background: var(--me-kyle);
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-weight: 500;
+  font-size: clamp(12px, 0.135em, 24px);
+  line-height: 1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  padding: 0.32em 0.5em 0.36em;
+  border-radius: 0.33em;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+
+/* Smart guides (Figma red) with "x" snap markers. */
+.me-guide {
+  position: absolute;
+  height: 1px;
+  background: var(--me-guide);
+  opacity: 0;
+  transition: opacity 140ms ease;
+}
+[data-guide="on"] .me-guide,
+[data-guide="flash"] .me-guide {
+  opacity: 1;
+}
+[data-guide="flash"] .me-guide,
+.me-snap[data-flash] {
+  animation: me-guide-flash 420ms ease-out;
+}
+.me-x {
+  position: absolute;
+  top: 0.5px;
+  width: 7px;
+  height: 7px;
+  transform: translate(-50%, -50%);
+}
+.me-snap--v .me-x {
+  left: 0.5px;
+}
+.me-x::before,
+.me-x::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  height: 1px;
+  background: var(--me-guide);
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+.me-x::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+@keyframes me-guide-flash {
+  0% { filter: none; }
+  25% { filter: drop-shadow(0 0 3px var(--me-guide)) brightness(1.5); }
+  100% { filter: none; }
+}
+
+/* YOUR chrome when you take over (desktop; positioned by the controller). */
+.me-uhover,
+.me-usel,
+.me-snap {
+  position: absolute;
+  display: none;
+  pointer-events: none;
+}
+.me-uhover[data-on],
+.me-usel[data-on],
+.me-snap[data-on] {
+  display: block;
+}
+.me-uhover {
+  box-shadow: inset 0 0 0 1px var(--me-select);
+}
+.me-usel {
+  border: 1px solid var(--me-select);
+  pointer-events: auto;
+  cursor: default;
+}
+.me-handle--user {
+  width: 7px;
+  height: 7px;
+  border: 1px solid var(--me-select);
+}
+.me-handle--user[data-handle="nw"],
+.me-handle--user[data-handle="se"] { cursor: nwse-resize; }
+.me-handle--user[data-handle="ne"],
+.me-handle--user[data-handle="sw"] { cursor: nesw-resize; }
+.me-handle--user[data-handle="n"],
+.me-handle--user[data-handle="s"] { cursor: ns-resize; }
+.me-handle--user[data-handle="e"],
+.me-handle--user[data-handle="w"] { cursor: ew-resize; }
+.me-tag--user {
+  background: var(--me-select);
+  font-size: clamp(9px, 0.72vw, 12px);
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+.me-snap {
+  background: var(--me-guide);
+}
+/* YOUR Figma name tag, riding just below-right of your real cursor. */
+.me-visitor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: none;
+  pointer-events: none;
+  z-index: 1;
+  margin: 18px 0 0 14px;
+  background: var(--me-select);
+  color: #fff;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: clamp(11px, 0.85vw, 15px);
+  line-height: 1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  padding: 0.32em 0.5em 0.36em;
+  border-radius: 0.33em;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+[data-takeover="on"] .me-visitor[data-on] {
+  display: block;
+}
+
+/* Typing caret on the filename label. */
+.me-caret {
+  display: inline-block;
+  width: 1px;
+  height: 1em;
+  margin-left: 0.08em;
+  vertical-align: -0.14em;
+  background: currentColor;
+  animation: me-blink 1s steps(1) infinite;
+}
+@keyframes me-blink {
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .me-kyle-chrome {
+    transition: none;
+  }
+  .me-guide {
+    opacity: 1;
+    transition: none;
+  }
+  [data-guide="flash"] .me-guide,
+  .me-snap[data-flash],
+  .me-caret {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------------------------------
+   Intro photo fan — see components/home/IntroFan.tsx (knobs + Figma data).
+   JS writes --fan-{shape,zoom,halo,inner,outer} (0→1) from scroll; all
+   geometry is in Figma units: --u = 1/298.67 of the headshot box, scaled by
+   --fan-size (FAN_SIZE).
+   ------------------------------------------------------------------------ */
+.fan {
+  container-type: inline-size;
+  --fan-shape: 0;
+  --fan-zoom: 0;
+  --fan-halo: 0;
+  --fan-inner: 0;
+  --fan-outer: 0;
+  --fan-spread: 1;
+}
+@media (max-width: 639.98px) {
+  .fan {
+    --fan-spread: var(--fan-spread-mobile, 0.44);
+  }
+}
+.fan > * {
+  --u: calc(100cqw / 298.67 * var(--fan-size, 1));
+}
+.fan-halo {
+  opacity: calc(1 - var(--fan-halo));
+}
+.fan-card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--w) * var(--u));
+  height: calc(var(--h) * var(--u));
+  border-radius: calc(var(--r) * var(--u));
+  overflow: hidden;
+  transform: translate(-50%, -50%)
+    translate(
+      calc(var(--dx) * var(--fan-spread) * var(--u) * var(--k)),
+      calc(var(--dy) * var(--u) * var(--k))
+    )
+    rotate(calc(var(--rot) * 1deg * var(--k)))
+    scale(calc(var(--fan-start-scale) + (1 - var(--fan-start-scale)) * var(--k)));
+  opacity: clamp(0, calc(var(--k) * 5), 1);
+  will-change: transform;
+}
+.fan-card--shadow {
+  box-shadow: 0 calc(1.26 * var(--u)) calc(2.52 * var(--u)) rgba(0, 0, 0, 0.05);
+}
+.fan-card-img {
+  position: absolute;
+  max-width: none;
+  object-fit: cover;
+}
+.fan-hero {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  /* circle → the card's 32.945u corners (10.91% of 302u) */
+  border-radius: calc(50% - 39.09% * var(--fan-shape));
+  /* 302u card on a 298.67u box = 1.0112, times the overall fan size */
+  transform: rotate(calc(1.12deg * var(--fan-shape)))
+    scale(calc(1 + (1.0112 * var(--fan-size, 1) - 1) * var(--fan-shape)));
+  box-shadow: 0 calc(1.373 * var(--u)) calc(2.745 * var(--u))
+    rgba(0, 0, 0, calc(0.05 * var(--fan-shape)));
+  will-change: transform;
+}
+/* The source photo laid out at the card crop (top 2/3, centred); at --fan-zoom 0
+   it's zoomed into the original circle crop (the old 448px headshot). */
+.fan-hero-img {
+  position: absolute;
+  left: -50%;
+  top: 0;
+  width: 200%;
+  height: 150%;
+  max-width: none;
+  transform-origin: 0 0;
+  transform: translate(
+      calc(-18.385% * (1 - var(--fan-zoom))),
+      calc(-7.1% * (1 - var(--fan-zoom)))
+    )
+    scale(calc(1.3213 - 0.3213 * var(--fan-zoom)));
 }
 
 /* Scroll reveal */

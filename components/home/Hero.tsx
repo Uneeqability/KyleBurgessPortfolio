@@ -19,16 +19,64 @@
  * On load a GSAP timeline plays the intro: the wordmark rises + de-blurs word by
  * word, then the portrait "comes into focus" (fade + settle from 1.04 + an
  * overall blur resolving to sharp). A CSS sheen then glints across the name.
+ *
+ * On top sits the decorative "caught mid-edit" layer (selection box, mis-kerned
+ * g, smart guide, filename gag) — see ./HeroMidEdit.tsx for it and its tunables.
  */
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import {
+  BurgessGlyphs,
+  GhostWord,
+  ghostSegment,
+  GUIDE_TO_PCT,
+  GUIDE_TO_PCT_MOBILE,
+  GUIDE_TOP_PCT,
+  GUIDE_TOP_PCT_MOBILE,
+  NOSE_X_PCT,
+  NOSE_X_PCT_MOBILE,
+  PhotoLayer,
+  PortfolioLabel,
+  shimmerHandlers,
+  SHOW_GUIDE_ON_MOBILE,
+  SmartGuide,
+  TakeoverChrome,
+  WordXf,
+  midEditVars,
+  useMidEdit,
+} from "./HeroMidEdit";
 
 const FRAME_W = 1920;
 const FRAME_H = 1247;
 const x = (px: number) => `${(px / FRAME_W) * 100}%`;
 const y = (px: number) => `${(px / FRAME_H) * 100}%`;
 const vw = (px: number) => `${(px / FRAME_W) * 100}vw`;
+
+/* Word boxes — shared by each real word and its invisible ghost (in the
+   mid-edit layer) so the two always line up exactly. */
+const KYLE_D_CLASS =
+  "absolute flex items-center justify-center font-serif font-light italic leading-[0.92]";
+const KYLE_D_BOX: React.CSSProperties = {
+  left: x(322.05),
+  top: y(286.31),
+  width: x(502.4),
+  height: y(164.25),
+  fontSize: vw(181.154),
+  letterSpacing: "-0.044em",
+};
+const BURGESS_D_CLASS =
+  "absolute flex items-center justify-center font-serif font-normal leading-[0.92]";
+const BURGESS_D_BOX: React.CSSProperties = {
+  left: x(735.89 + 26),
+  top: y(450.56),
+  width: x(1043.45),
+  height: y(164.25),
+  fontSize: vw(181.154),
+  letterSpacing: "-0.044em",
+};
+const BURGESS_M_CLASS =
+  "absolute left-[47.2%] top-[43.19%] font-serif text-[11.78vw] font-normal leading-[0.92] tracking-[-0.044em]";
 
 function Backdrop() {
   return (
@@ -70,34 +118,20 @@ function Portrait({ className = "" }: { className?: string }) {
   );
 }
 
-/** The cursor-following sheen: an inner span with a roomy line-height so the
- *  background-clip box contains the descenders, plus pointer handlers that drive
- *  the glow's position and intensity. */
-function Sheen({ children }: { children: string }) {
-  const onGlow = (e: React.PointerEvent<HTMLSpanElement>) => {
-    const el = e.currentTarget;
-    const r = el.getBoundingClientRect();
-    el.style.setProperty("--sx", `${((e.clientX - r.left) / r.width) * 100}%`);
-    el.style.setProperty("--sy", `${((e.clientY - r.top) / r.height) * 100}%`);
-    el.style.setProperty("--glow", "1");
-  };
-  const offGlow = (e: React.PointerEvent<HTMLSpanElement>) => {
-    e.currentTarget.style.setProperty("--glow", "0");
-  };
-  return (
-    <span
-      className="hero-shimmer inline-block leading-[1.25]"
-      onPointerEnter={onGlow}
-      onPointerMove={onGlow}
-      onPointerLeave={offGlow}
-    >
-      {children}
-    </span>
-  );
+/** A shimmer piece: clips the band of light to its glyphs (roomy line-height
+ *  for descenders). The pointer handlers live on the word box
+ *  (`shimmerHandlers`), so every piece of a word shares one band of light. */
+function Sheen({ children }: { children: React.ReactNode }) {
+  return <span className="hero-shimmer inline-block leading-[1.25]">{children}</span>;
 }
+
+/** "Bur" / "ess" are shimmer pieces; the g gets the same class directly (it
+    can't sit inside another piece's text clip — see BurgessGlyphs). */
+const sheenSegment = (text: string) => <Sheen>{text}</Sheen>;
 
 export default function Hero() {
   const root = useRef<HTMLElement>(null);
+  useMidEdit(root);
 
   useEffect(() => {
     const el = root.current;
@@ -109,7 +143,7 @@ export default function Hero() {
     // whichever layout is on screen at load.
     const allHero = Array.from(
       el.querySelectorAll<HTMLElement>(
-        "[data-hero-word], [data-hero-portrait]",
+        "[data-hero-word], [data-hero-portrait], [data-hero-overlay]",
       ),
     );
     gsap.set(allHero, { opacity: 1 });
@@ -126,6 +160,7 @@ export default function Hero() {
     const words = pick("[data-hero-word]");
     const portrait = pick("[data-hero-portrait]");
     const sharp = pick('[data-hero-portrait="sharp"]');
+    const overlay = pick("[data-hero-overlay]");
 
     // The mobile portrait centres via -translate-x-1/2, so it only gets the
     // opacity + de-blur; the scale/drift (which writes transform) is desktop-only.
@@ -157,7 +192,10 @@ export default function Hero() {
         portrait,
         { ...portraitTo, duration: 1.1, ease: "power3.out" },
         0.25,
-      );
+      )
+      // Editor chrome appears once "Burgess" has landed.
+      .set(overlay, { opacity: 0 }, 0)
+      .to(overlay, { opacity: 1, duration: 0.5, ease: "power2.out" }, 1.15);
 
     // The "come into focus" de-blur is desktop-only — the mobile portrait stays
     // crisp (no blur at all).
@@ -182,46 +220,49 @@ export default function Hero() {
   return (
     <section
       ref={root}
+      data-edit="editing"
+      data-guide="on"
+      data-takeover="off"
+      style={midEditVars}
       className="relative isolate w-full overflow-hidden bg-forest text-cream"
     >
+      {/* The visual wordmark below is decorative (split letters, a cycling
+          label); this is what assistive tech reads. */}
+      <h1 className="sr-only">Kyle Burgess</h1>
+      <p className="sr-only">portfolio</p>
+
       {/* ---------- Desktop: exact Figma frame ---------- */}
-      <div className="relative hidden w-full sm:block sm:aspect-[1920/1247]">
+      <div
+        data-me-frame="1920"
+        className="relative hidden w-full sm:block sm:aspect-[1920/1247]"
+      >
         <Backdrop />
 
-        {/* Portrait, placed by the Figma photo box (left -314, top 87.45, 2048×1159) */}
-        <Portrait className="left-[-18.7%] top-[7.013%] h-[92.974%] w-[106.680%] object-cover object-center" />
+        {/* Portrait, placed by the Figma photo box (left -314, top 87.45, 2048×1159).
+            Wrapped as a movable layer for the takeover. */}
+        <PhotoLayer>
+          <Portrait className="left-[-18.7%] top-[7.013%] h-[92.974%] w-[106.680%] object-cover object-center" />
+        </PhotoLayer>
 
         {/* Wordmark (z-10, behind the portrait) */}
-        <div className="absolute inset-0 z-10 text-cream">
+        <div aria-hidden="true" className="absolute inset-0 z-10 text-cream">
           <span
             data-hero-word
-            className="absolute flex items-center justify-center font-serif font-light italic leading-[0.92]"
-            style={{
-              left: x(322.05),
-              top: y(286.31),
-              width: x(502.4),
-              height: y(164.25),
-              fontSize: vw(181.154),
-              letterSpacing: "-0.044em",
-              opacity: 0,
-            }}
+            className={KYLE_D_CLASS}
+            style={{ ...KYLE_D_BOX, opacity: 0 }}
           >
-            <Sheen>Kyle</Sheen>
+            <WordXf word="kyle" {...shimmerHandlers}>
+              <Sheen>Kyle</Sheen>
+            </WordXf>
           </span>
           <span
             data-hero-word
-            className="absolute flex items-center justify-center font-serif font-normal leading-[0.92]"
-            style={{
-              left: x(735.89 + 26),
-              top: y(450.56),
-              width: x(1043.45),
-              height: y(164.25),
-              fontSize: vw(181.154),
-              letterSpacing: "-0.044em",
-              opacity: 0,
-            }}
+            className={BURGESS_D_CLASS}
+            style={{ ...BURGESS_D_BOX, opacity: 0 }}
           >
-            <Sheen>Burgess</Sheen>
+            <WordXf word="burgess" {...shimmerHandlers}>
+              <BurgessGlyphs segment={sheenSegment} gClassName="hero-shimmer" />
+            </WordXf>
           </span>
           <span
             data-hero-word
@@ -235,36 +276,62 @@ export default function Hero() {
               opacity: 0,
             }}
           >
-            portfolio
+            <WordXf word="portfolio">
+              <PortfolioLabel />
+            </WordXf>
           </span>
+        </div>
+
+        {/* Mid-edit layer — above the portrait, like editor UI: Kyle's
+            selection + cursor on a ghost of "Burgess", the nose guide, and
+            your takeover chrome. Kyle's size tag sits top-right so it never
+            covers the g's descender or crowds the "portfolio" label. */}
+        <div
+          data-hero-overlay
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-30"
+          style={{ opacity: 0 }}
+        >
+          <GhostWord word="kyle" className={KYLE_D_CLASS} style={KYLE_D_BOX}>
+            Kyle
+          </GhostWord>
+          <GhostWord word="burgess" className={BURGESS_D_CLASS} style={BURGESS_D_BOX} kyle>
+            <BurgessGlyphs withCursor segment={ghostSegment} />
+          </GhostWord>
+          <SmartGuide top={GUIDE_TOP_PCT} from={NOSE_X_PCT} to={GUIDE_TO_PCT} />
+          <TakeoverChrome />
         </div>
       </div>
 
       {/* ---------- Mobile: exact replica of the Figma mobile frame (517×389) ---------- */}
-      <div className="relative block aspect-[517/389] w-full overflow-hidden sm:hidden">
+      <div
+        data-me-frame="517"
+        className="relative block aspect-[517/389] w-full overflow-hidden sm:hidden"
+      >
         <Backdrop />
 
         {/* Wordmark — BEHIND the portrait (the cutout body sits in front of it,
             exactly per the Figma layering). Positions are the Figma px coords
             converted to % of the 517×389 frame. */}
-        <div className="absolute inset-0 text-cream">
+        <div aria-hidden="true" className="absolute inset-0 text-cream">
           <span
             data-hero-word
             className="absolute left-[13%] top-[29.05%] font-serif text-[11.78vw] font-light italic leading-[0.92] tracking-[-0.044em] opacity-0"
           >
-            <Sheen>Kyle</Sheen>
+            <WordXf word="kyle" {...shimmerHandlers}>
+              <Sheen>Kyle</Sheen>
+            </WordXf>
           </span>
-          <span
-            data-hero-word
-            className="absolute left-[47.2%] top-[43.19%] font-serif text-[11.78vw] font-normal leading-[0.92] tracking-[-0.044em] opacity-0"
-          >
-            <Sheen>Burgess</Sheen>
+          <span data-hero-word className={`${BURGESS_M_CLASS} opacity-0`}>
+            <WordXf word="burgess" {...shimmerHandlers}>
+              <BurgessGlyphs segment={sheenSegment} gClassName="hero-shimmer" />
+            </WordXf>
           </span>
           <span
             data-hero-word
             className="absolute left-[73.95%] top-[61%] font-mono text-[2.36vw] font-light text-cream/85 opacity-0"
           >
-            portfolio
+            <PortfolioLabel />
           </span>
         </div>
 
@@ -282,6 +349,25 @@ export default function Hero() {
             decoding="async"
             className="pointer-events-none absolute left-[-109.34%] top-[-12.31%] h-[112.34%] w-[264.13%] max-w-none opacity-0"
           />
+        </div>
+
+        {/* Mid-edit chrome — the tag sits top-right here, clear of the label */}
+        <div
+          data-hero-overlay
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-30"
+          style={{ opacity: 0 }}
+        >
+          <GhostWord word="burgess" className={BURGESS_M_CLASS} kyle>
+            <BurgessGlyphs withCursor segment={ghostSegment} />
+          </GhostWord>
+          {SHOW_GUIDE_ON_MOBILE && (
+            <SmartGuide
+              top={GUIDE_TOP_PCT_MOBILE}
+              from={NOSE_X_PCT_MOBILE}
+              to={GUIDE_TO_PCT_MOBILE}
+            />
+          )}
         </div>
       </div>
     </section>
