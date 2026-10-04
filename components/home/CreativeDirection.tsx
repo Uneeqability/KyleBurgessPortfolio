@@ -21,7 +21,14 @@ const TRUSTED_ALT =
  * Infinite logo marquee — two identical strips side by side, the pair sliding
  * left forever. When the first strip has scrolled one full width out, the second
  * sits exactly where it began, so the loop is seamless.
+ *
+ * The strips carry their real size (width/height) and load eagerly: Safari
+ * resolves the keyframes' -50% when the animation starts and never updates it,
+ * so a lazy image that is still 0px wide at that moment froze the strip (or,
+ * never loading inside the moving clip, left it blank) on iPhones.
  */
+const LOGOS_W = 2890;
+const LOGOS_H = 65;
 function LogoMarquee({ height }: { height: string }) {
   return (
     <div className="flex w-full overflow-hidden">
@@ -29,7 +36,8 @@ function LogoMarquee({ height }: { height: string }) {
         <img
           src="/images/trusted-logos.svg"
           alt={TRUSTED_ALT}
-          loading="lazy"
+          width={LOGOS_W}
+          height={LOGOS_H}
           decoding="async"
           className={`${height} w-auto max-w-none shrink-0`}
         />
@@ -37,7 +45,8 @@ function LogoMarquee({ height }: { height: string }) {
           src="/images/trusted-logos.svg"
           alt=""
           aria-hidden
-          loading="lazy"
+          width={LOGOS_W}
+          height={LOGOS_H}
           decoding="async"
           className={`${height} w-auto max-w-none shrink-0`}
         />

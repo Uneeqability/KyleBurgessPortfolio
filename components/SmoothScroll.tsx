@@ -13,6 +13,17 @@ import Lenis from "lenis";
  * route change we force it back to the top — otherwise a new page opens partway
  * down. (Native browser scroll restoration is also disabled for the same reason.)
  */
+function restartMarquees() {
+  document.querySelectorAll<HTMLElement>('[class*="marquee"]').forEach((el) => {
+    el.getAnimations().forEach((a) => {
+      if (a instanceof CSSAnimation && a.animationName === "marquee-left") {
+        a.cancel();
+        a.play();
+      }
+    });
+  });
+}
+
 export default function SmoothScroll() {
   const lenisRef = useRef<Lenis | null>(null);
   const pathname = usePathname();
@@ -32,6 +43,11 @@ export default function SmoothScroll() {
     lenisRef.current = lenis;
     // Expose for programmatic scrolls (e.g. the nav "contact" → footer link).
     (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
+
+    // Marquees animate translateX(-50%) of their own width, which Safari locks
+    // in when the animation starts. Once web fonts land (text marquees change
+    // width), restart them so the loop seam stays seamless.
+    document.fonts?.ready.then(restartMarquees);
 
     let rafId = 0;
     const raf = (time: number) => {

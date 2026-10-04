@@ -64,14 +64,16 @@ body {
 /* Infinite logo marquee — two identical strips translating left in unison */
 @keyframes marquee-left {
   from {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translateX(-50%);
+    transform: translate3d(-50%, 0, 0);
   }
 }
 .animate-marquee {
   animation: marquee-left 40s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 @media (prefers-reduced-motion: reduce) {
   .animate-marquee {

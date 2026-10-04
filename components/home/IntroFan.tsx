@@ -53,7 +53,7 @@ const HOVER_PERSPECTIVE = "perspective(700px)";
 export const CAROUSEL_HOLD_MS = 2600;
 const CAROUSEL_SLIDE_MS = 850;
 /** Left → right, as in the Figma fan; the main photo advances rightward. */
-const RING = ["dog", "waterfall", "kyle", "snow", "beach"] as const;
+const RING = ["dog", "blazer", "kyle", "scooter", "beach"] as const;
 const PHONE = "(max-width: 639.98px)";
 
 /** Slot (-2…2) of each photo when ring[(2 + index) % 5] is the main one. */
@@ -67,7 +67,7 @@ const PHASES = {
   shape: [0, 0.55], // circle → rounded card
   zoom: [0, 0.7], // photo zooms out from the tight circle crop to the card crop
   halo: [0, 0.35], // the soft blurred halo fades away
-  inner: [0.12, 0.72], // waterfall + snow cards
+  inner: [0.12, 0.72], // blazer + scooter cards
   outer: [0.25, 1], // dog + beach cards
 } as const;
 
@@ -91,6 +91,9 @@ type Card = {
   shadow: boolean;
   /** the photo inside the card, % of the card box */
   img: { left: number; top: number; w: number; h: number; flip?: boolean };
+  /** u from the card's left edge that can ever be seen (the rest is always
+   *  under the headshot); the photo only needs to cover from here */
+  visibleFrom?: number;
 };
 
 // Bottom → top, in Figma's stacking order.
@@ -125,9 +128,9 @@ const CARDS: Card[] = [
     img: { left: -1.899, top: -20.696, w: 106.53, h: 141.245, flip: true },
   },
   {
-    key: "snow",
-    src: "/images/intro/snow.jpg",
-    alt: "Kyle snowboarding",
+    key: "scooter",
+    src: "/images/intro/scooter.jpg",
+    alt: "Kyle with a scooter on a tropical road",
     group: "inner",
     w: 257,
     h: 233.524,
@@ -136,12 +139,15 @@ const CARDS: Card[] = [
     rot: 3.21,
     r: 28.036,
     shadow: false,
-    img: { left: -1.35, top: -26.863, w: 103.502, h: 140.885 },
+    // Figma places this photo from 43u in; the card's first ~92u sit under the
+    // headshot, so the uncovered strip is never seen
+    img: { left: 16.95, top: -16.95, w: 93.0, h: 136.17 },
+    visibleFrom: 60,
   },
   {
-    key: "waterfall",
-    src: "/images/intro/waterfall.jpg",
-    alt: "Kyle at a waterfall",
+    key: "blazer",
+    src: "/images/intro/blazer.jpg",
+    alt: "Kyle in a blazer by the sea at sunset",
     group: "inner",
     w: 210.643,
     h: 223.091,
@@ -150,7 +156,7 @@ const CARDS: Card[] = [
     rot: -1.33,
     r: 28.036,
     shadow: false,
-    img: { left: -1.215, top: -15.447, w: 103.967, h: 130.888 },
+    img: { left: -8.329, top: -25.546, w: 124.38, h: 156.89 },
   },
 ];
 
@@ -165,8 +171,9 @@ function coverScale(c: Card) {
   const cx = ((c.img.left + c.img.w / 2) / 100) * c.w;
   const cy = ((c.img.top + c.img.h / 2) / 100) * c.h;
   const a = (c.rot * Math.PI) / 180; // photo is rotated by -rot; undo it
+  const x0 = c.visibleFrom ?? 0;
   let s = 1;
-  for (const [x, y] of [[0, 0], [c.w, 0], [0, c.h], [c.w, c.h]]) {
+  for (const [x, y] of [[x0, 0], [c.w, 0], [x0, c.h], [c.w, c.h]]) {
     const dx = x - cx;
     const dy = y - cy;
     const lx = dx * Math.cos(a) - dy * Math.sin(a);

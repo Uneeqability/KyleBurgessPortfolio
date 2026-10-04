@@ -32,12 +32,15 @@ export default function Reveal({
     }
     const obs = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) {
+        const e = entries[0];
+        // Also count it once it's above the viewport: a fast phone flick can
+        // carry it past between frames, and it would otherwise stay hidden.
+        if (e.intersectionRatio >= 0.12 || e.boundingClientRect.bottom < 0) {
           setShown(true);
           obs.disconnect();
         }
       },
-      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
+      { threshold: [0, 0.12], rootMargin: "0px 0px -8% 0px" },
     );
     obs.observe(el);
     return () => obs.disconnect();
