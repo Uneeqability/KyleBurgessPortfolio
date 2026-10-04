@@ -12,10 +12,9 @@
  *     snap back (the red guide flashes), then fiddles with the g and changes
  *     his mind. The hero is never quite still.
  *   • The red smart guide snaps the TOP EDGE of the selection to the nose tip.
- *   • Each snap moves the "portfolio" filename on a version (portfolio_v2 →
- *     … → portfolio_v9_FINAL_final → back to portfolio).
  *
- *   YOU (desktop mouse) — you get your own Figma name tag
+ *   YOU (desktop mouse) — your own Figma pointer + name tag replaces the
+ *     system cursor (the system resize cursors still show on the handles)
  *   • Hover = you interrupted him: the g lands, everything snaps home, his
  *     chrome fades — and the file is yours. Every layer is editable: "Kyle",
  *     "Burgess", the "portfolio" label, and the photo (picked by its actual
@@ -35,7 +34,7 @@
  * Styles: app/globals.css → "Hero mid-edit".
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import gsap from "gsap";
 
 /* ====================== TUNING KNOBS (edit these) ======================= */
@@ -76,7 +75,7 @@ export const G_ROTATE_DEG = -3;
 /** "Still working on it" idle loop. */
 export const IDLE_START_DELAY_S = 2.6; // after the intro
 export const IDLE_REST_S = 2.2; // breather between moves
-export const IDLE_DRIFT_PX = { x: 5, y: -3 }; // how far he drags "Burgess" off
+export const IDLE_DRIFT_PX = { x: 5, y: 3 }; // how far he drags "Burgess" off (down-right, away from "portfolio")
 
 /** Interaction timing (ms). */
 export const SNAP_MS = 250; // the g springs into place
@@ -92,28 +91,6 @@ export const MAX_SCALE = 2.5;
  *  trails your cursor (0–1; lower = silkier, more lag; 1 = locked to cursor). */
 export const SHIMMER_ANGLE_DEG = 110; // keep in sync with globals.css
 export const SHIMMER_FOLLOW = 0.14;
-
-/** "portfolio" filename gag. The label moves on to the next version each time
- *  Kyle snaps "Burgess" back onto the guide (so it changes because he edits,
- *  not on its own timer), and types itself back to the first entry when you
- *  take over. After the last version it loops back to plain "portfolio". */
-export const LABEL_VARIANTS = [
-  "portfolio",
-  "portfolio_v2",
-  "portfolio_v3b",
-  "portfolio_v4_final",
-  "portfolio_v7_FINAL",
-  "portfolio_v9_FINAL_final",
-];
-export const LABEL_TYPE_MS = 25; // per character, backspace and retype
-export const LABEL_CARET_LINGER_MS = 700; // caret blinks this long after typing
-/** Skip a filename that would land within this many px of the hero's edge
- *  (narrow screens drop the longer ones). */
-export const LABEL_EDGE_MARGIN_PX = 8;
-
-/** Events the controller sends the label (on the hero section). */
-const LABEL_NEXT_EVENT = "me:label-next";
-const LABEL_RESET_EVENT = "me:label-reset";
 
 /* ======================================================================== */
 
@@ -237,20 +214,26 @@ export function WordXf({
   );
 }
 
+/** Figma's collaborator pointer: a tailless arrowhead with a white rim. */
+function FigmaPointer({ color }: { color: string }) {
+  return (
+    <svg className="me-cursor-arrow" viewBox="0 0 15 19" aria-hidden="true">
+      <path
+        d="M1.5 1.5v15.2l4.2-3.9h6.6z"
+        fill={color}
+        stroke="#fff"
+        strokeWidth="1"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 /** Kyle's Figma multiplayer cursor: coloured arrow + name tag. */
 function KyleCursor() {
   return (
     <span className="me-cursor me-kyle-chrome">
-      {/* Figma's collaborator pointer: a tailless arrowhead, white rim */}
-      <svg className="me-cursor-arrow" viewBox="0 0 15 19" aria-hidden="true">
-        <path
-          d="M1.5 1.5v15.2l4.2-3.9h6.6z"
-          fill="var(--me-kyle)"
-          stroke="#fff"
-          strokeWidth="1"
-          strokeLinejoin="round"
-        />
-      </svg>
+      <FigmaPointer color="var(--me-kyle)" />
       <span className="me-cursor-name">{CURSOR_NAME}</span>
     </span>
   );
@@ -411,7 +394,10 @@ export function TakeoverChrome() {
         <span className="me-x" style={{ top: 0, left: 0 }} />
         <span className="me-x" style={{ top: "100%", left: 0 }} />
       </span>
-      <span className="me-visitor" data-me-visitor />
+      <span className="me-visitor" data-me-visitor>
+        <FigmaPointer color="var(--me-select)" />
+        <span className="me-cursor-name">{VISITOR_NAME}</span>
+      </span>
     </>
   );
 }
@@ -662,16 +648,24 @@ export function useMidEdit(rootRef: React.RefObject<HTMLElement | null>) {
 
     /* ---- Kyle's idle loop: drag off the guide, hesitate, snap back; then
        nearly fix the g… and change his mind. ---- */
+    // IDLE_DRIFT_PX is tuned at 1440 (Burgess ≈136px). Scale it with the word,
+    // so on a phone the drag doesn't shove Kyle's cursor into "portfolio".
+    const driftScale = () => {
+      const word = [...root.querySelectorAll<HTMLElement>('[data-me-word="burgess"]')].find(
+        (w) => w.offsetWidth > 0,
+      );
+      return word ? Math.min(1.3, parseFloat(getComputedStyle(word).fontSize) / 136) : 1;
+    };
+    const drift = (v: number) => () => `${(v * driftScale()).toFixed(2)}px`;
     const { x: dx, y: dy } = IDLE_DRIFT_PX;
     const idle = gsap.timeline({ repeat: -1, paused: true, defaults: { ease: "power2.inOut" } });
     idle
       .call(() => setGuide("off"), [], IDLE_REST_S)
-      .to(root, { "--me-bx": `${dx}px`, "--me-by": `${dy}px`, duration: 0.45 }, IDLE_REST_S)
-      .to(root, { "--me-bx": `${dx * 0.55}px`, "--me-by": `${dy * 1.4}px`, duration: 0.3 }, ">+0.35")
+      .to(root, { "--me-bx": drift(dx), "--me-by": drift(dy), duration: 0.45 }, IDLE_REST_S)
+      .to(root, { "--me-bx": drift(dx * 0.55), "--me-by": drift(dy * 1.4), duration: 0.3 }, ">+0.35")
       .to(root, { "--me-bx": "0px", "--me-by": "0px", duration: 0.14, ease: "power3.in" }, ">+0.45")
       .call(() => {
         setGuide("flash");
-        root.dispatchEvent(new Event(LABEL_NEXT_EVENT)); // the filename moves on a version
       })
       .to(root, { "--me-g-drop": `${G_DROP_EM * 0.35}em`, "--me-g-rot": `${G_ROTATE_DEG * 0.35}deg`, duration: 0.4 }, ">+1.1")
       .to(root, { "--me-g-drop": `${G_DROP_EM * 1.3}em`, "--me-g-rot": `${G_ROTATE_DEG * 1.4}deg`, duration: 0.45 }, ">+0.6")
@@ -695,6 +689,10 @@ export function useMidEdit(rootRef: React.RefObject<HTMLElement | null>) {
     });
     io.observe(root);
     offs.push(() => io.disconnect());
+    // re-read the drift distance for the new word size
+    const onResize = () => idle.invalidate();
+    window.addEventListener("resize", onResize);
+    offs.push(() => window.removeEventListener("resize", onResize));
 
     /* ---- Takeover state (+ a frame loop that keeps your chrome glued to
        layers that change on their own, e.g. the typing label). ---- */
@@ -727,7 +725,6 @@ export function useMidEdit(rootRef: React.RefObject<HTMLElement | null>) {
       root.setAttribute("data-edit", "committed");
       setGuide("flash");
       guideTimer = later(() => root.setAttribute("data-guide", "off"), 320);
-      root.dispatchEvent(new Event(LABEL_RESET_EVENT)); // you have the file now
     };
 
     /* ---- Restore: Kyle takes it back. ---- */
@@ -788,7 +785,6 @@ export function useMidEdit(rootRef: React.RefObject<HTMLElement | null>) {
 
     /* ---- Takeover (desktop mouse) ---- */
     if (frame && ui) {
-      ui.visitor.textContent = VISITOR_NAME;
 
       type Drag =
         | { kind: "move"; it: Item; px: number; py: number; t0: Xf; r0: Rect; xs: Target[]; ys: Target[] }
@@ -879,9 +875,14 @@ export function useMidEdit(rootRef: React.RefObject<HTMLElement | null>) {
         if (takeover) {
           const f = frame.getBoundingClientRect();
           ui.visitor.style.transform = `translate(${e.clientX - f.left}px, ${e.clientY - f.top}px)`;
+          // Only over the hero itself (not the nav that sits on top of it).
           const inside =
-            e.clientX >= f.left && e.clientX <= f.right && e.clientY >= f.top && e.clientY <= f.bottom;
+            e.clientX >= f.left && e.clientX <= f.right && e.clientY >= f.top && e.clientY <= f.bottom &&
+            e.target instanceof Node && frame.contains(e.target);
           show(ui.visitor, inside);
+          // On a resize handle the system resize cursor takes over from the arrow.
+          const onHandle = e.target instanceof Element && !!e.target.closest("[data-handle]");
+          ui.visitor.toggleAttribute("data-native", onHandle || drag?.kind === "resize");
           if (!drag) {
             const h = inside ? hitTest(e) : null;
             if (h !== hovered) {
@@ -1011,105 +1012,9 @@ export function useMidEdit(rootRef: React.RefObject<HTMLElement | null>) {
   }, [rootRef]);
 }
 
-/* ------------------------------ label gag ------------------------------- */
+/* ------------------------------- label ---------------------------------- */
 
-/**
- * The "portfolio" label. It sits still until Kyle edits: each time he snaps
- * "Burgess" back onto the guide (LABEL_NEXT_EVENT) it backspaces to the shared
- * prefix and types the next version, caret blinking while it's being edited;
- * when you take over (LABEL_RESET_EVENT) it types back to plain "portfolio".
- * Anchored on the left, grows right; versions that wouldn't fit before the
- * hero's edge are skipped. Static under reduced motion (Kyle doesn't edit).
- */
+/** The "portfolio" label: static text, movable like the other layers. */
 export function PortfolioLabel() {
-  const [text, setText] = useState(LABEL_VARIANTS[0]);
-  const [caret, setCaret] = useState(false);
-  const textRef = useRef<HTMLSpanElement>(null);
-  const measureRef = useRef<HTMLSpanElement>(null);
-
-  useEffect(() => {
-    const el = textRef.current;
-    const measure = measureRef.current;
-    const hero = el?.closest("section");
-    if (!el || !measure || !hero || reducedMotion()) return;
-
-    let alive = true;
-    let busy = false;
-    let idx = 0;
-    let current = LABEL_VARIANTS[0];
-    let target = current;
-    let timer: number | undefined;
-    let caretTimer: number | undefined;
-    const sleep = (ms: number) =>
-      new Promise<void>((r) => (timer = window.setTimeout(r, ms)));
-
-    const fits = (s: string) => {
-      if (el.offsetParent === null) return false; // the hidden layout
-      measure.textContent = s;
-      const right = el.getBoundingClientRect().left + measure.offsetWidth;
-      measure.textContent = "";
-      return right <= hero.getBoundingClientRect().right - LABEL_EDGE_MARGIN_PX;
-    };
-
-    // Type from the current filename to the latest target (a newer target
-    // arriving mid-edit is picked up when the current one finishes).
-    const run = async () => {
-      if (busy) return;
-      busy = true;
-      window.clearTimeout(caretTimer);
-      setCaret(true);
-      while (alive && current !== target) {
-        const goal = target;
-        let p = 0; // shared prefix
-        while (p < current.length && p < goal.length && current[p] === goal[p]) p++;
-        for (let n = current.length - 1; n >= p && alive; n--) {
-          setText(current.slice(0, n));
-          await sleep(LABEL_TYPE_MS);
-        }
-        for (let n = p + 1; n <= goal.length && alive; n++) {
-          setText(goal.slice(0, n));
-          await sleep(LABEL_TYPE_MS);
-        }
-        current = goal;
-      }
-      busy = false;
-      if (alive) caretTimer = window.setTimeout(() => setCaret(false), LABEL_CARET_LINGER_MS);
-    };
-
-    const onNext = () => {
-      let next = (idx + 1) % LABEL_VARIANTS.length;
-      while (next !== 0 && !fits(LABEL_VARIANTS[next])) {
-        next = (next + 1) % LABEL_VARIANTS.length;
-      }
-      idx = next;
-      target = LABEL_VARIANTS[next];
-      run();
-    };
-    const onReset = () => {
-      idx = 0;
-      target = LABEL_VARIANTS[0];
-      run();
-    };
-    hero.addEventListener(LABEL_NEXT_EVENT, onNext);
-    hero.addEventListener(LABEL_RESET_EVENT, onReset);
-
-    return () => {
-      alive = false;
-      window.clearTimeout(timer);
-      window.clearTimeout(caretTimer);
-      hero.removeEventListener(LABEL_NEXT_EVENT, onNext);
-      hero.removeEventListener(LABEL_RESET_EVENT, onReset);
-    };
-  }, []);
-
-  return (
-    <span className="relative whitespace-nowrap">
-      <span ref={textRef}>{text}</span>
-      {caret && <span className="me-caret" />}
-      <span
-        ref={measureRef}
-        className="pointer-events-none invisible absolute left-0 top-0"
-      />
-    </span>
-  );
+  return <span className="whitespace-nowrap">portfolio</span>;
 }

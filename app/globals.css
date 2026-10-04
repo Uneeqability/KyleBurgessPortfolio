@@ -236,24 +236,33 @@ body {
   right: -0.4em;
 }
 
-/* Kyle's Figma multiplayer cursor, gripping the bottom of the g's lower loop —
-   low enough that his name tag hangs below the word, clear of "portfolio". */
+/* Kyle's Figma multiplayer cursor, gripping the lower-left of the g's bottom
+   loop, so the arrow and name tag hang down-left of "portfolio", never into it.
+   Arrow + tag are one unit sized off the tag's type size (1em here = the tag's
+   font size): it tracks the word, with a floor that keeps "Kyle" legible on
+   phones, and the arrow:tag proportions never change. */
 .me-cursor {
   position: absolute;
-  left: 34%;
-  top: 95%;
+  left: 14%;
+  top: 94%;
   width: 0;
   height: 0;
+  font-size: clamp(11px, 0.135em, 24px);
+}
+/* Phone layout: "portfolio" tucks in closer and the tag is relatively bigger
+   (its 11px floor), so grip a touch further down-left for clearance. */
+[data-me-frame="517"] .me-cursor {
+  left: 12%;
+  top: 98%;
 }
 [data-edit="committed"] .me-cursor {
-  transform: translate(0.12em, 0.08em); /* steps aside as it fades */
+  transform: translate(0.9em, 0.6em); /* steps aside as it fades */
 }
-/* Sized to read unmistakably as Figma's multiplayer cursor. */
 .me-cursor-arrow {
   position: absolute;
   left: 0;
   top: 0;
-  width: clamp(22px, 0.24em, 44px);
+  width: 1.78em;
   height: auto;
   overflow: visible;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
@@ -261,15 +270,15 @@ body {
 .me-cursor-name {
   position: absolute;
   /* label's top-left tucks just past the arrowhead's right point */
-  left: clamp(13px, 0.144em, 26px);
-  top: clamp(21px, 0.232em, 43px);
+  left: 1.07em;
+  top: 1.72em;
   background: var(--me-kyle);
   color: #fff;
   -webkit-text-fill-color: #fff;
   font-family: var(--font-sans);
   font-style: normal;
   font-weight: 500;
-  font-size: clamp(12px, 0.135em, 24px);
+  font-size: 1em;
   line-height: 1;
   letter-spacing: 0.01em;
   white-space: nowrap;
@@ -369,43 +378,41 @@ body {
   background: var(--me-guide);
 }
 /* YOUR Figma name tag, riding just below-right of your real cursor. */
+/* YOUR pointer during takeover: the same Figma arrow + tag as Kyle's, in your
+   blue, at the same size as his. It replaces the system cursor over the hero
+   (handles keep their resize cursors; the arrow hides there). The anchor is a
+   0×0 point at the pointer; the arrow is offset so its tip is the hotspot. */
 .me-visitor {
   position: absolute;
   left: 0;
   top: 0;
+  width: 0;
+  height: 0;
   display: none;
   pointer-events: none;
   z-index: 1;
-  margin: 18px 0 0 14px;
+  font-size: clamp(11px, 1.274vw, 24px); /* = Kyle's tag (0.135em of the word) */
+}
+.me-visitor .me-cursor-arrow {
+  left: -0.178em;
+  top: -0.178em;
+}
+.me-visitor .me-cursor-name {
+  left: 0.892em;
+  top: 1.542em;
   background: var(--me-select);
-  color: #fff;
-  font-family: var(--font-sans);
-  font-weight: 500;
-  font-size: clamp(11px, 0.85vw, 15px);
-  line-height: 1;
-  letter-spacing: 0.01em;
-  white-space: nowrap;
-  padding: 0.32em 0.5em 0.36em;
-  border-radius: 0.33em;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+.me-visitor[data-native] .me-cursor-arrow {
+  display: none;
 }
 [data-takeover="on"] .me-visitor[data-on] {
   display: block;
 }
+[data-takeover="on"] [data-me-frame="1920"],
+[data-takeover="on"] [data-me-frame="1920"] :not(.me-handle--user) {
+  cursor: none;
+}
 
-/* Typing caret on the filename label. */
-.me-caret {
-  display: inline-block;
-  width: 1px;
-  height: 1em;
-  margin-left: 0.08em;
-  vertical-align: -0.14em;
-  background: currentColor;
-  animation: me-blink 1s steps(1) infinite;
-}
-@keyframes me-blink {
-  50% { opacity: 0; }
-}
 
 @media (prefers-reduced-motion: reduce) {
   .me-kyle-chrome {
@@ -416,8 +423,7 @@ body {
     transition: none;
   }
   [data-guide="flash"] .me-guide,
-  .me-snap[data-flash],
-  .me-caret {
+  .me-snap[data-flash] {
     animation: none;
   }
 }
@@ -430,6 +436,7 @@ body {
    ------------------------------------------------------------------------ */
 .fan {
   container-type: inline-size;
+  scale: var(--fan-block, 1); /* BLOCK_SIZE, around the centre */
   --fan-shape: 0;
   --fan-zoom: 0;
   --fan-halo: 0;
@@ -454,8 +461,6 @@ body {
   top: 50%;
   width: calc(var(--w) * var(--u));
   height: calc(var(--h) * var(--u));
-  border-radius: calc(var(--r) * var(--u));
-  overflow: hidden;
   transform: translate(-50%, -50%)
     translate(
       calc(var(--dx) * var(--fan-spread) * var(--u) * var(--k)),
@@ -466,8 +471,23 @@ body {
   opacity: clamp(0, calc(var(--k) * 5), 1);
   will-change: transform;
 }
-.fan-card--shadow {
+/* The card's face: rounded clip + shadow, and the layer the hover tilt moves. */
+.fan-card-face {
+  position: absolute;
+  inset: 0;
+  border-radius: calc(var(--r) * var(--u));
+  overflow: hidden;
+}
+.fan-card--shadow .fan-card-face {
   box-shadow: 0 calc(1.26 * var(--u)) calc(2.52 * var(--u)) rgba(0, 0, 0, 0.05);
+}
+/* Hover tilt (IntroFan → onTiltMove): eased so it settles with some weight.
+   Inline transform is ignored until the fan has fully landed. */
+.fan-tilt {
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.fan:not([data-fanned]) .fan-tilt {
+  transform: none !important;
 }
 .fan-card-img {
   position: absolute;
