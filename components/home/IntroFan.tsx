@@ -12,6 +12,12 @@
  * counter-rotated inside its tilted card, exactly as in the file, so the photo
  * stays level while the card edge tilts.
  *
+ * Phones (<640px) get a carousel instead: the five photos don't fit side by
+ * side at a readable size, so the headshot is the big "main" card with one
+ * photo peeking out on each side (the other two wait hidden behind). Once the
+ * scroll-in lands, the main photo auto-advances (tap to skip ahead); scroll
+ * back up and it returns to the headshot before folding away.
+ *
  * Tuning knobs are right below.
  */
 
@@ -26,16 +32,13 @@ export const FAN_START = 0.92;
 export const FAN_END = 0.42;
 
 /** Size of the whole block (circle and fan together) vs the Intro layout's
- *  448px headshot box. Scales around the centre, so nothing shifts. */
+ *  448px headshot box. Scales around the centre, so nothing shifts. Desktop
+ *  only — on phones Intro.tsx sizes the box so the full fan fits the screen. */
 export const BLOCK_SIZE = 0.85;
 
 /** Size of the fanned-out scene vs the circle (1 = the Figma proportions). The
  *  circle settles into the card at this scale. */
 export const FAN_SIZE = 0.9;
-
-/** Horizontal spread on phones (1 = the Figma spacing). The cards overlap more
- *  so the outer ones still fit inside a 375px screen. */
-export const MOBILE_SPREAD = 0.44;
 
 /** Where each card starts, tucked behind the headshot. */
 export const CARD_START_SCALE = 0.72;
@@ -44,6 +47,20 @@ export const CARD_START_SCALE = 0.72;
  *  pressed that corner in, the same tilt as the presentation-page slides. */
 export const HOVER_TILT_DEG = 8;
 const HOVER_PERSPECTIVE = "perspective(700px)";
+
+/** Phone carousel: how long each photo is the main one, and the slide time
+ *  (keep CAROUSEL_SLIDE_MS in sync with globals.css → .fan[data-carousel]). */
+export const CAROUSEL_HOLD_MS = 2600;
+const CAROUSEL_SLIDE_MS = 850;
+/** Left → right, as in the Figma fan; the main photo advances rightward. */
+const RING = ["dog", "waterfall", "kyle", "snow", "beach"] as const;
+const PHONE = "(max-width: 639.98px)";
+
+/** Slot (-2…2) of each photo when ring[(2 + index) % 5] is the main one. */
+const slotOf = (key: string, index: number) => {
+  const r = RING.indexOf(key as (typeof RING)[number]);
+  return ((((r - 2 - index) % 5) + 7) % 5) - 2;
+};
 
 /** Phases of the 0→1 scroll progress: [start, end] for each part. */
 const PHASES = {
@@ -180,6 +197,57 @@ export default function IntroFan({ className = "" }: { className?: string }) {
       return;
     }
 
+    /* ---- Phone carousel ---- */
+    const phone = window.matchMedia(PHONE);
+    const items = [...el.querySelectorAll<HTMLElement>("[data-fan-item]")];
+    let index = 0;
+    let fanned = false;
+    let inView = true;
+    let tick: number | undefined;
+    let settle: number | undefined;
+    const apply = () =>
+      items.forEach((it) => (it.dataset.slot = String(slotOf(it.dataset.fanItem!, index))));
+    const stop = () => window.clearInterval(tick);
+    const start = () => {
+      stop();
+      if (phone.matches && fanned && inView) tick = window.setInterval(advance, CAROUSEL_HOLD_MS);
+    };
+    function advance() {
+      index = (index + 1) % RING.length;
+      apply();
+    }
+    // Carousel runs once everything has landed; scrolling back up first slides
+    // the headshot home (transitions still on), then hands back to the scrub.
+    const setFanned = (v: boolean) => {
+      if (v === fanned) return;
+      fanned = v;
+      window.clearTimeout(settle);
+      if (v) {
+        el.dataset.carousel = "";
+        start();
+      } else {
+        stop();
+        const wasAway = index !== 0;
+        index = 0;
+        apply();
+        if (wasAway) settle = window.setTimeout(() => delete el.dataset.carousel, CAROUSEL_SLIDE_MS);
+        else delete el.dataset.carousel;
+      }
+    };
+    const onTap = () => {
+      if (!phone.matches || !fanned) return;
+      advance();
+      start(); // full hold on the photo you picked
+    };
+    const io = new IntersectionObserver(([e]) => {
+      inView = e.isIntersecting;
+      if (inView) start();
+      else stop();
+    });
+    io.observe(el);
+    el.addEventListener("click", onTap);
+    phone.addEventListener("change", start);
+
     const inOut = gsap.parseEase("power2.inOut");
     const out = gsap.parseEase("power2.out");
     const phase = (p: number, [a, b]: readonly [number, number]) =>
@@ -198,9 +266,10 @@ export default function IntroFan({ className = "" }: { className?: string }) {
         inner: out(phase(p, PHASES.inner)),
         outer: out(phase(p, PHASES.outer)),
       });
-      // Hover tilt is live only once everything has landed.
+      // Hover tilt (desktop) and the carousel (phones) only once it's landed.
       if (p >= 1) el.dataset.fanned = "";
       else delete el.dataset.fanned;
+      setFanned(p >= 1);
     };
     const onScroll = () => {
       cancelAnimationFrame(raf);
@@ -213,6 +282,11 @@ export default function IntroFan({ className = "" }: { className?: string }) {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       cancelAnimationFrame(raf);
+      stop();
+      window.clearTimeout(settle);
+      io.disconnect();
+      el.removeEventListener("click", onTap);
+      phone.removeEventListener("change", start);
     };
   }, []);
 
@@ -221,7 +295,7 @@ export default function IntroFan({ className = "" }: { className?: string }) {
   const onTiltMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = e.currentTarget;
     if (!el.closest(".fan[data-fanned]")) return;
-    if (window.matchMedia("(hover: none), (prefers-reduced-motion: reduce)").matches) return;
+    if (window.matchMedia(`(hover: none), (prefers-reduced-motion: reduce), ${PHONE}`).matches) return;
     const r = el.getBoundingClientRect();
     const px = (e.clientX - r.left) / r.width - 0.5; // -0.5 (left) … 0.5 (right)
     const py = (e.clientY - r.top) / r.height - 0.5; // -0.5 (top) … 0.5 (bottom)
@@ -242,7 +316,6 @@ export default function IntroFan({ className = "" }: { className?: string }) {
         {
           "--fan-block": BLOCK_SIZE,
           "--fan-size": FAN_SIZE,
-          "--fan-spread-mobile": MOBILE_SPREAD,
           "--fan-start-scale": CARD_START_SCALE,
         } as React.CSSProperties
       }
@@ -262,6 +335,8 @@ export default function IntroFan({ className = "" }: { className?: string }) {
         <div
           key={c.key}
           className={`fan-card${c.shadow ? " fan-card--shadow" : ""}`}
+          data-fan-item={c.key}
+          data-slot={slotOf(c.key, 0)}
           style={
             {
               "--w": c.w,
@@ -282,6 +357,7 @@ export default function IntroFan({ className = "" }: { className?: string }) {
               loading="lazy"
               decoding="async"
               className="fan-card-img"
+              data-flip={c.img.flip ? "" : undefined}
               style={{
                 left: `${c.img.left}%`,
                 top: `${c.img.top}%`,
@@ -297,7 +373,12 @@ export default function IntroFan({ className = "" }: { className?: string }) {
       ))}
 
       {/* The headshot itself: circle → card (tilt outside, morph inside) */}
-      <div className="fan-tilt absolute inset-0" {...tilt}>
+      <div
+        className="fan-tilt fan-hero-slot absolute inset-0"
+        data-fan-item="kyle"
+        data-slot={0}
+        {...tilt}
+      >
         <div className="fan-hero">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img

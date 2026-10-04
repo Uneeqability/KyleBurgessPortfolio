@@ -58,8 +58,10 @@ export default function Intro() {
 
       {/* ---------- Mobile: fluid stack ---------- */}
       <div className="flex flex-col items-center px-6 py-24 text-center sm:hidden">
+        {/* Phone carousel: the side cards reach ~330u from centre (≈ the box
+            width at FAN_SIZE 0.9), so this keeps them inside a 16px gutter. */}
         <Reveal>
-          <IntroFan className="size-44" />
+          <IntroFan className="size-[min(14rem,calc(50vw_-_17px))]" />
         </Reveal>
         <Heading className="mt-12 max-w-md text-[2rem] font-normal leading-tight" />
         <Reveal className="mt-8 max-w-md">

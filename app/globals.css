@@ -442,11 +442,11 @@ body {
   --fan-halo: 0;
   --fan-inner: 0;
   --fan-outer: 0;
-  --fan-spread: 1;
 }
+/* Phones size the box to fit the full fan (see Intro.tsx), so no extra scale. */
 @media (max-width: 639.98px) {
   .fan {
-    --fan-spread: var(--fan-spread-mobile, 0.44);
+    scale: 1;
   }
 }
 .fan > * {
@@ -463,7 +463,7 @@ body {
   height: calc(var(--h) * var(--u));
   transform: translate(-50%, -50%)
     translate(
-      calc(var(--dx) * var(--fan-spread) * var(--u) * var(--k)),
+      calc(var(--dx) * var(--u) * var(--k)),
       calc(var(--dy) * var(--u) * var(--k))
     )
     rotate(calc(var(--rot) * 1deg * var(--k)))
@@ -486,8 +486,74 @@ body {
 .fan-tilt {
   transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.fan:not([data-fanned]) .fan-tilt {
-  transform: none !important;
+@media (min-width: 640px) {
+  .fan:not([data-fanned]) .fan-tilt {
+    transform: none !important;
+  }
+}
+
+/* Phone carousel (IntroFan → slotOf). Every photo is a square card placed by
+   its slot: 0 = the main card (same size/tilt as the desktop headshot card),
+   ±1 = peeking out either side, ±2 = waiting hidden behind. Cards still fan
+   out from behind the headshot on scroll (--k); once landed, JS rotates the
+   slots and these transitions slide everything along. */
+@media (max-width: 639.98px) {
+  .fan [data-slot="0"] { --sdx: 0; --sdy: 0; --srot: 1.12; --ss: 302; --sz: 5; --sop: 1; }
+  .fan [data-slot="-1"] { --sdx: -200; --sdy: 16; --srot: -2.6; --ss: 248; --sz: 4; --sop: 1; }
+  .fan [data-slot="1"] { --sdx: 200; --sdy: 20; --srot: 3; --ss: 248; --sz: 4; --sop: 1; }
+  .fan [data-slot="-2"] { --sdx: -95; --sdy: 12; --srot: -4; --ss: 220; --sz: 1; --sop: 0; }
+  .fan [data-slot="2"] { --sdx: 95; --sdy: 14; --srot: 4; --ss: 220; --sz: 1; --sop: 0; }
+
+  .fan-card {
+    width: calc(302 * var(--u));
+    height: calc(302 * var(--u));
+    z-index: var(--sz);
+    transform: translate(-50%, -50%)
+      translate(
+        calc(var(--sdx) * var(--u) * var(--k)),
+        calc(var(--sdy) * var(--u) * var(--k))
+      )
+      rotate(calc(var(--srot) * 1deg * var(--k)))
+      scale(
+        calc(
+          (var(--fan-start-scale) + (1 - var(--fan-start-scale)) * var(--k)) *
+            var(--ss) / 302
+        )
+      );
+    opacity: calc(clamp(0, var(--k) * 5, 1) * var(--sop));
+  }
+  .fan .fan-card-face {
+    border-radius: calc(32.945 * var(--u));
+    box-shadow: 0 calc(2 * var(--u)) calc(8 * var(--u)) rgba(0, 0, 0, 0.12);
+  }
+  /* square cards: the photo simply fills it (no Figma counter-rotation) */
+  .fan-card-img {
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    transform: none !important;
+  }
+  .fan-card-img[data-flip] {
+    transform: scaleX(-1) !important;
+  }
+  .fan .fan-hero {
+    box-shadow: 0 calc(2 * var(--u)) calc(8 * var(--u))
+      rgba(0, 0, 0, calc(0.12 * var(--fan-shape)));
+  }
+  /* the headshot's own morph (rotate 1.12°, scale) lives on .fan-hero inside */
+  .fan-hero-slot {
+    z-index: var(--sz);
+    opacity: var(--sop);
+    transform: translate(calc(var(--sdx) * var(--u)), calc(var(--sdy) * var(--u)))
+      rotate(calc((var(--srot) - 1.12) * 1deg)) scale(calc(var(--ss) / 302)) !important;
+  }
+  .fan[data-carousel] .fan-card,
+  .fan[data-carousel] .fan-hero-slot {
+    transition:
+      transform 0.85s cubic-bezier(0.65, 0, 0.35, 1),
+      opacity 0.5s ease;
+  }
 }
 .fan-card-img {
   position: absolute;
